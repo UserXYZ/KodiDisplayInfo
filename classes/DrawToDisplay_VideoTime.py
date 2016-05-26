@@ -3,7 +3,7 @@ from datetime import timedelta
 class DrawToDisplay_VideoTime:
     
     # default for 320x240
-    _drawSetting = {}   
+    _drawSetting = {}
     _drawSetting['videoinfo.progressbar.margin_top'] = 85
     _drawSetting['videoinfo.progressbar.height'] = 25
     

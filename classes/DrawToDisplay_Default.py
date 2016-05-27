@@ -65,9 +65,14 @@ class DrawToDisplay_Default:
         else:
             x = x - (text.get_rect().width/2)
             y = y - (text.get_rect().height/2) 
-            
+
         self.screen.blit(text, [x, y])
-    
+
+    def get_text_w(self, text, size):
+	font = self.pygame.font.Font(self._ConfigDefault['basedirpath']+"fonts/MC360.ttf", size)
+        size = font.size(text)
+	return size[0]
+	
     def drawLogoStartScreen(self, time_now):
         if self.default_info_text != '':
             self.infoTextKODI(self.default_info_text, self.default_info_color)

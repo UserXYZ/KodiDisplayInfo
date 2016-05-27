@@ -1,5 +1,6 @@
 import urllib
 import json
+from string import split
 
 class KODI_WEBSERVER:
 
@@ -39,6 +40,7 @@ class KODI_WEBSERVER:
         try:
             parsed_json = self.getJSON('{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}')
             try:
+        	### print("json=",str(parsed_json))
                 return parsed_json['result'][0]['playerid'], parsed_json['result'][0]['type']
             except KeyError:
                 return 0, ""
@@ -87,11 +89,15 @@ class KODI_WEBSERVER:
         try:
             parsed_json = self.getJSON('{"jsonrpc": "2.0", "method": "Player.GetProperties", "params": { "playerid": '+str(playerid)+', "properties": ["speed","time","totaltime"] }, "id": 1}')
             try:
+        	### print("Vprop=",parsed_json)
                 speed = parsed_json['result']['speed']
-                minutes_time = self.__format_to_minute(parsed_json['result']['time']['hours'],parsed_json['result']['time']['minutes'])
-                minutes_timetotal = self.__format_to_minute(parsed_json['result']['totaltime']['hours'], parsed_json['result']['totaltime']['minutes'])
+                ###minutes_time = self.__format_to_minute(parsed_json['result']['time']['hours'],parsed_json['result']['time']['minutes'])
+                ###minutes_timetotal = self.__format_to_minute(parsed_json['result']['totaltime']['hours'], parsed_json['result']['totaltime']['minutes'])
+                media_time = str(parsed_json['result']['time']['hours'])+":"+str(parsed_json['result']['time']['minutes'])+":"+str(parsed_json['result']['time']['seconds'])
+                media_timetotal = str(parsed_json['result']['totaltime']['hours'])+":"+str(parsed_json['result']['totaltime']['minutes'])+":"+str(parsed_json['result']['totaltime']['seconds'])
 
-                return speed, minutes_time, minutes_timetotal
+                ###return speed, minutes_time, minutes_timetotal
+                return speed, media_time, media_timetotal
             except KeyError, e:
                 print "KeyError: " + str(e)
                 return 0,0,0
@@ -103,22 +109,4 @@ class KODI_WEBSERVER:
             print 'Decoding JSON has failed'
             return 0,0,0
 
-    def KODI_GetPropertiesA(self, playerid):
-        try:
-            parsed_json = self.getJSON('{"jsonrpc": "2.0", "method": "Player.GetProperties", "params": { "playerid": '+str(playerid)+', "properties": ["time","totaltime"] }, "id": 1}')
-            try:
-                speeda = parsed_json['result']['speed']
-                seconds_time = self.__format_to_seconds(parsed_json['result']['time']['minutes'],parsed_json['result']['time']['seconds'])
-                seconds_timetotal = self.__format_to_seconds(parsed_json['result']['totaltime']['minutes'], parsed_json['result']['totaltime']['seconds'])
 
-                return speeda,seconds_time, seconds_timetotal
-            except KeyError, e:
-                print "KeyError: " + str(e)
-                return 0,0,0
-            except IndexError, e:
-                print "IndexError: " + str(e)
-                return 0,0,0
-        except ValueError:
-            self.helper.printout("[warning]    ", self._ConfigDefault['mesg.red'])
-            print 'Decoding JSON has failed'
-            return 0,0,0

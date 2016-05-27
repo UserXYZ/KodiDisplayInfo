@@ -4,7 +4,25 @@ class Helper(object):
 
 	def __init__(self, _ConfigDefault):
 		self._ConfigDefault = _ConfigDefault
-	
+
+	def get_sec(self, s):
+	    try:
+		t = s.split(':')
+		return int(t[0]) * 3600 + int(t[1]) * 60 + int(t[2])
+	    except ValueError:
+        	self.helper.printout("[warning]    ", self._ConfigDefault['mesg.red'])
+        	print 'Converting time to seconds has failed'
+        	return 0
+
+	def get_min(self, s):
+	    try:
+		t = s.split(':')
+		return int(t[0]) * 60 + int(t[1])
+	    except ValueError:
+        	self.helper.printout("[warning]    ", self._ConfigDefault['mesg.red'])
+        	print 'Converting time to minutes has failed'
+        	return 0
+
 	#following from http://code.activestate.com/recipes/475186/
 	def has_colours(self, stream):
 		if not hasattr(stream, "isatty"):

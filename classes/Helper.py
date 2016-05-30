@@ -4,7 +4,7 @@ class Helper(object):
 
 	def __init__(self, _ConfigDefault):
 		self._ConfigDefault = _ConfigDefault
-
+	### convert time to seconds
 	def get_sec(self, s):
 	    try:
 		t = s.split(':')
@@ -13,16 +13,7 @@ class Helper(object):
         	self.helper.printout("[warning]    ", self._ConfigDefault['mesg.red'])
         	print 'Converting time to seconds has failed'
         	return 0
-
-	def get_min(self, s):
-	    try:
-		t = s.split(':')
-		return int(t[0]) * 60 + int(t[1])
-	    except ValueError:
-        	self.helper.printout("[warning]    ", self._ConfigDefault['mesg.red'])
-        	print 'Converting time to minutes has failed'
-        	return 0
-
+	### pad media time with zeros
 	def add_zeros(self,s):
 	    try:
 	    	t = s.split(':')

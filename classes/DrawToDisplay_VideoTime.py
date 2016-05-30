@@ -99,39 +99,43 @@ class DrawToDisplay_VideoTime:
         self.pygame.draw.rect(self.screen, self._ConfigDefault['color.orange'], rect_done)
         self.pygame.draw.rect(self.screen, self._ConfigDefault['color.white'], rect_bar, 1)
         
-    def drawProperties(self, audio_title, time_now, speed, media_time, media_timetotal):
+    def drawProperties(self, video_title, time_now, speed, media_time, media_timetotal):
         margin_top = 0
-        audioinfo_title_fontsize = self._drawSetting['videoinfo.title.fontsize']
+        videoinfo_title_fontsize = self._drawSetting['videoinfo.title.fontsize']
 
         ### convert media_time and media_timetotal to seconds
         seconds_time = self.helper.get_sec(media_time)
         seconds_timetotal = self.helper.get_sec(media_timetotal)
 
-        if len(audio_title)>15 and self._ConfigDefault['config.movietitleformat']=="twoline":                    
+        if len(video_title)>15 and self._ConfigDefault['config.movietitleformat']=="twoline":
             max_word_count = 21
             if self._ConfigDefault['display.resolution']=="480x320":
-                audioinfo_title_fontsize = 49
+                videoinfo_title_fontsize = 49
                 margin_top = -18
                 second_title_height_margin = -46
             if self._ConfigDefault['display.resolution']=="480x272":
-                audioinfo_title_fontsize = 42
+                videoinfo_title_fontsize = 42
                 margin_top = -11
                 second_title_height_margin = -40
             if self._ConfigDefault['display.resolution']=="320x240":
-                audioinfo_title_fontsize = 40
+                videoinfo_title_fontsize = 40
                 margin_top = -16
                 max_word_count = 16
                 second_title_height_margin = -38
-
-            last_space = audio_title.rindex(' ', 0, max_word_count);
-            old_audio_title = audio_title
-            line1 = old_audio_title[0:last_space].strip()
-            line2 = old_audio_title[last_space:].strip()
-
-            self.draw_default.displaytext(line1, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['videoinfo.title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
-            self.draw_default.displaytext(line2, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['videoinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
+	    ### try to break title
+            try:
+        	last_space = video_title.rindex(' ', 0, max_word_count);
+        	old_video_title = video_title
+        	line1 = old_video_title[0:last_space].strip()
+        	line2 = old_video_title[last_space:].strip()
+	    except ValueError:
+		line1 = video_title
+		line2 = ""
+		
+            self.draw_default.displaytext(line1, videoinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['videoinfo.title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
+            self.draw_default.displaytext(line2, videoinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['videoinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
         else:
-            self.draw_default.displaytext(audio_title, self._drawSetting['videoinfo.title.fontsize'], 10, self.screen.get_height()-self._drawSetting['videoinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
+            self.draw_default.displaytext(video_title, self._drawSetting['videoinfo.title.fontsize'], 10, self.screen.get_height()-self._drawSetting['videoinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
 
         self.draw_default.displaytext(str(time_now.strftime("%H:%M")), self._drawSetting['videoinfo.time_now.fontsize'], 10, self._drawSetting['videoinfo.time_now.height_margin'], 'left', (self._ConfigDefault['color.white']))
         addtonow = time_now + timedelta(seconds=(seconds_timetotal-seconds_time))

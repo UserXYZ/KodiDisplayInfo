@@ -107,7 +107,7 @@ class DrawToDisplay_AudioTime:
         seconds_time = self.helper.get_sec(media_time)
         seconds_timetotal = self.helper.get_sec(media_timetotal)
 
-        if len(audio_title)>15 and self._ConfigDefault['config.movietitleformat']=="twoline":                    
+        if len(audio_title)>15 and self._ConfigDefault['config.musictitleformat']=="twoline":
             max_word_count = 21
             if self._ConfigDefault['display.resolution']=="480x320":
                 audioinfo_title_fontsize = 49
@@ -123,10 +123,14 @@ class DrawToDisplay_AudioTime:
                 max_word_count = 16
                 second_title_height_margin = -38
 
-            last_space = audio_title.rindex(' ', 0, max_word_count);
-            old_audio_title = audio_title
-            line1 = old_audio_title[0:last_space].strip()
-            line2 = old_audio_title[last_space:].strip()
+	    try:
+        	last_space = audio_title.rindex(' ', 0, max_word_count);
+        	old_audio_title = audio_title
+        	line1 = old_audio_title[0:last_space].strip()
+        	line2 = old_audio_title[last_space:].strip()
+	    except ValueError:
+		line1 = audio_title
+		line2 = ""
 
             self.draw_default.displaytext(line1, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
             self.draw_default.displaytext(line2, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))

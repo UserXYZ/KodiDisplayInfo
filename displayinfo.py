@@ -36,14 +36,14 @@ GREEN = (0,255,0)
 
 _ConfigDefault = {
     "basedirpath":              basedirpath,
-    
+
     "mesg.grey":                30,
     "mesg.red":                 31,
-    "mesg.green":               32,    
+    "mesg.green":               32,
     "mesg.yellow":              33,
     "mesg.blue":                34,
     "mesg.magenta":             35,
-    "mesg.cyan":                36,   
+    "mesg.cyan":                36,
     "mesg.white":               37,
 
     "KODI.webserver.host":            "localhost",
@@ -51,7 +51,7 @@ _ConfigDefault = {
     "KODI.webserver.user":            "",
     "KODI.webserver.pass":            "",
 
-    "display.resolution":       "320x240",   
+    "display.resolution":       "320x240",
 
     "config.screenmodus":       "time",
     "config.watchmodus":        "film",
@@ -145,12 +145,11 @@ def main_exit():
 
 def main():
     time_now = 0
-    video_title = ""
-    audio_title = ""
+    title = ""
 
     helper.printout("[info]    ", _ConfigDefault['mesg.cyan'])
     print "Start: KodiDisplayInfo"
-    
+
     pygame.init()
     screen = pygame.display.set_mode(getattr(draw_default, 'Screen'+_ConfigDefault['display.resolution'])(), 0, 32)
     pygame.display.set_caption('KodiDisplayInfo')
@@ -173,53 +172,40 @@ def main():
             time_now = datetime.datetime.now()
             #start draw
             screen.fill(_ConfigDefault['color.black']) #reset
-
+	    ### get type of player
             playerid, playertype = KODI_WEBSERVER.KODI_GetActivePlayers()
-### video player active
-            if playertype=="video" and int(playerid) > 0:    
-                if _ConfigDefault['config.watchmodus']=="livetv":
-                    video_title = KODI_WEBSERVER.KODI_GetItem(playerid, "video")
-                else:
-                    if video_title == "":
-                        video_title = KODI_WEBSERVER.KODI_GetItem(playerid, "video")
-                        helper.printout("[info]    ", _ConfigDefault['mesg.green'])
-                        print "Video: " + video_title
 
-                speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
-                ### convert media_time and media_timetotal to minutes
-                #minutes_time = helper.get_min(media_time)
-                #minutes_timetotal = helper.get_min(media_timetotal)
+            if (playertype=="video" and int(playerid) > 0) or (playertype=="audio" and int(playerid) >= 0):
+		### video player active
+        	if playertype=="video":
+            	    if _ConfigDefault['config.watchmodus']=="livetv":
+                	title = KODI_WEBSERVER.KODI_GetItem(playerid, "video")
+            	    else:
+                	if title == "":
+                    	    title = KODI_WEBSERVER.KODI_GetItem(playerid, "video")
+                    	    helper.printout("[info]    ", _ConfigDefault['mesg.green'])
+                    	    print "Video: " + title
+		### audio player active
+		elif playertype=="audio":
+            	    if _ConfigDefault['config.watchmodus']=="livetv":
+			title = KODI_WEBSERVER.KODI_GetItem(playerid, "audio")
+            	    else:
+                	if title == "":
+                    	    title = KODI_WEBSERVER.KODI_GetItem(playerid, "audio")
+                    	    helper.printout("[info]    ", _ConfigDefault['mesg.green'])
+                    	    print "Audio: " + title
+		### get status times
+            	speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
+            	### convert media_timetotal to seconds
+            	seconds_timetotal = helper.get_sec(media_timetotal)
 
-                #if minutes_timetotal>0:
-                #    if _ConfigDefault['config.screenmodus']=="time":
-                #        draw_videotime.drawProperties(video_title, time_now, speed, minutes_time, minutes_timetotal)
-                seconds_timetotal = helper.get_sec(media_timetotal)
-
-                if seconds_timetotal>0:
-                    if _ConfigDefault['config.screenmodus']=="time":
-                        draw_audiotime.drawProperties(audio_title, time_now, speed, media_time, media_timetotal)
-### audio player active
-	    elif playertype=="audio" and int(playerid) >= 0:    
-                if _ConfigDefault['config.watchmodus']=="livetv":
-                    audio_title = KODI_WEBSERVER.KODI_GetItem(playerid, "audio")
-                else:
-                    if audio_title == "":
-                        audio_title = KODI_WEBSERVER.KODI_GetItem(playerid, "audio")
-                        helper.printout("[info]    ", _ConfigDefault['mesg.green'])
-                        print "Audio: " + audio_title
-
-                speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
-                ### convert media_time and media_timetotal to seconds
-                seconds_timetotal = helper.get_sec(media_timetotal)
-
-                if seconds_timetotal>0:
-                    if _ConfigDefault['config.screenmodus']=="time":
-                        draw_audiotime.drawProperties(audio_title, time_now, speed, media_time, media_timetotal)
-### something else
+            	if seconds_timetotal>0:
+            	    if _ConfigDefault['config.screenmodus']=="time":
+            		draw_audiotime.drawProperties(title, time_now, speed, media_time, media_timetotal)
+	    ### something else
             else:
                 # API has nothing
-                video_title = ""
-                audio_title = ""
+                title = ""
                 draw_default.drawLogoStartScreen(time_now)
 
             pygame.display.flip()

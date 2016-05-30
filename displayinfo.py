@@ -159,7 +159,7 @@ def main():
     draw_default.setPygameScreen(pygame, screen)
     draw_videotime.setPygameScreen(pygame, screen, draw_default)
     draw_audiotime.setPygameScreen(pygame, screen, draw_default)
-    
+
     running = True
     # run the game loop
     try:
@@ -169,43 +169,47 @@ def main():
                     running = False
                 #elif event.type == KEYDOWN and event.key == K_ESCAPE:
                 #    running = False
-                
+
             time_now = datetime.datetime.now()
             #start draw
             screen.fill(_ConfigDefault['color.black']) #reset
-            
+
             playerid, playertype = KODI_WEBSERVER.KODI_GetActivePlayers()
 ### video player active
             if playertype=="video" and int(playerid) > 0:    
                 if _ConfigDefault['config.watchmodus']=="livetv":
-                    video_title = KODI_WEBSERVER.KODI_GetItem(playerid)
+                    video_title = KODI_WEBSERVER.KODI_GetItem(playerid, "video")
                 else:
                     if video_title == "":
-                        video_title = KODI_WEBSERVER.KODI_GetItem(playerid)
+                        video_title = KODI_WEBSERVER.KODI_GetItem(playerid, "video")
                         helper.printout("[info]    ", _ConfigDefault['mesg.green'])
                         print "Video: " + video_title
-                    
-                ###speed, minutes_time, minutes_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid) 
+
                 speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
                 ### convert media_time and media_timetotal to minutes
-                minutes_time = helper.get_min(media_time)
-                minutes_timetotal = helper.get_min(media_timetotal)
-                if minutes_timetotal>0:
+                #minutes_time = helper.get_min(media_time)
+                #minutes_timetotal = helper.get_min(media_timetotal)
+
+                #if minutes_timetotal>0:
+                #    if _ConfigDefault['config.screenmodus']=="time":
+                #        draw_videotime.drawProperties(video_title, time_now, speed, minutes_time, minutes_timetotal)
+                seconds_timetotal = helper.get_sec(media_timetotal)
+
+                if seconds_timetotal>0:
                     if _ConfigDefault['config.screenmodus']=="time":
-                        draw_videotime.drawProperties(video_title, time_now, speed, minutes_time, minutes_timetotal)
+                        draw_audiotime.drawProperties(audio_title, time_now, speed, media_time, media_timetotal)
 ### audio player active
 	    elif playertype=="audio" and int(playerid) >= 0:    
                 if _ConfigDefault['config.watchmodus']=="livetv":
-                    audio_title = KODI_WEBSERVER.KODI_GetItemA(playerid)
+                    audio_title = KODI_WEBSERVER.KODI_GetItem(playerid, "audio")
                 else:
                     if audio_title == "":
-                        audio_title = KODI_WEBSERVER.KODI_GetItemA(playerid)
+                        audio_title = KODI_WEBSERVER.KODI_GetItem(playerid, "audio")
                         helper.printout("[info]    ", _ConfigDefault['mesg.green'])
                         print "Audio: " + audio_title
 
-                speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid) 
+                speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
                 ### convert media_time and media_timetotal to seconds
-                ### seconds_time = helper.get_sec(media_time)
                 seconds_timetotal = helper.get_sec(media_timetotal)
 
                 if seconds_timetotal>0:
@@ -217,12 +221,12 @@ def main():
                 video_title = ""
                 audio_title = ""
                 draw_default.drawLogoStartScreen(time_now)
-    
+
             pygame.display.flip()
-        
+
             time.sleep(1)
             pygame.display.update()
-        
+
         helper.printout("[end]     ", _ConfigDefault['mesg.magenta'])
         print "bye ..."
         main_exit()
@@ -233,10 +237,10 @@ def main():
 
 if __name__ == "__main__":
     draw_default = DrawToDisplay_Default(helper, _ConfigDefault)
-    
+
     if _ConfigDefault['config.screenmodus']=="time":
         draw_videotime = DrawToDisplay_VideoTime(helper, _ConfigDefault)
         draw_audiotime = DrawToDisplay_AudioTime(helper, _ConfigDefault)
-    
+
     KODI_WEBSERVER = KODI_WEBSERVER(helper, _ConfigDefault, draw_default)
     main()

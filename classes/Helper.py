@@ -23,6 +23,15 @@ class Helper(object):
         	print 'Converting time to minutes has failed'
         	return 0
 
+	def add_zeros(self,s):
+	    try:
+	    	t = s.split(':')
+		return str(t[0]+':'+t[1].zfill(2)+':'+t[2].zfill(2))
+	    except ValueError:
+        	self.helper.printout("[warning]    ", self._ConfigDefault['mesg.red'])
+        	print 'Padding time with zeroes has failed'
+        	return 0
+
 	#following from http://code.activestate.com/recipes/475186/
 	def has_colours(self, stream):
 		if not hasattr(stream, "isatty"):

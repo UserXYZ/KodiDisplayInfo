@@ -18,9 +18,9 @@ class DrawToDisplay_VideoTime:
     _drawSetting['videoinfo.time_end.fontsize'] = 60
     _drawSetting['videoinfo.time_end.height_margin'] = 68
     
-    _drawSetting['videoinfo.time.fontsize'] = 64
+    _drawSetting['videoinfo.time.fontsize'] = 38
     _drawSetting['videoinfo.time.margin_left'] = 0
-    _drawSetting['videoinfo.time.margin_top'] = 67
+    _drawSetting['videoinfo.time.margin_top'] = 54
     
     def __init__(self, helper, _ConfigDefault):
         self.helper = helper
@@ -99,47 +99,65 @@ class DrawToDisplay_VideoTime:
         self.pygame.draw.rect(self.screen, self._ConfigDefault['color.orange'], rect_done)
         self.pygame.draw.rect(self.screen, self._ConfigDefault['color.white'], rect_bar, 1)
         
-    def drawProperties(self, video_title, time_now, speed, minutes_time, minutes_timetotal):
+    def drawProperties(self, audio_title, time_now, speed, media_time, media_timetotal):
         margin_top = 0
-        videoinfo_title_fontsize = self._drawSetting['videoinfo.title.fontsize']
-        
-        if len(video_title)>15 and self._ConfigDefault['config.movietitleformat']=="twoline":                    
+        audioinfo_title_fontsize = self._drawSetting['videoinfo.title.fontsize']
+
+        ### convert media_time and media_timetotal to seconds
+        seconds_time = self.helper.get_sec(media_time)
+        seconds_timetotal = self.helper.get_sec(media_timetotal)
+
+        if len(audio_title)>15 and self._ConfigDefault['config.movietitleformat']=="twoline":                    
             max_word_count = 21
             if self._ConfigDefault['display.resolution']=="480x320":
-                videoinfo_title_fontsize = 49
+                audioinfo_title_fontsize = 49
                 margin_top = -18
                 second_title_height_margin = -46
             if self._ConfigDefault['display.resolution']=="480x272":
-                videoinfo_title_fontsize = 42
+                audioinfo_title_fontsize = 42
                 margin_top = -11
                 second_title_height_margin = -40
             if self._ConfigDefault['display.resolution']=="320x240":
-                videoinfo_title_fontsize = 40
+                audioinfo_title_fontsize = 40
                 margin_top = -16
                 max_word_count = 16
                 second_title_height_margin = -38
-                
-            last_space = video_title.rindex(' ', 0, max_word_count);
-            old_video_title = video_title
-            line1 = old_video_title[0:last_space].strip()
-            line2 = old_video_title[last_space:].strip()
-      
-            self.draw_default.displaytext(line1, videoinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['videoinfo.title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
-            self.draw_default.displaytext(line2, videoinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['videoinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
+
+            last_space = audio_title.rindex(' ', 0, max_word_count);
+            old_audio_title = audio_title
+            line1 = old_audio_title[0:last_space].strip()
+            line2 = old_audio_title[last_space:].strip()
+
+            self.draw_default.displaytext(line1, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['videoinfo.title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
+            self.draw_default.displaytext(line2, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['videoinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
         else:
-            self.draw_default.displaytext(video_title, self._drawSetting['videoinfo.title.fontsize'], 10, self.screen.get_height()-self._drawSetting['videoinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
-        
+            self.draw_default.displaytext(audio_title, self._drawSetting['videoinfo.title.fontsize'], 10, self.screen.get_height()-self._drawSetting['videoinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
+
         self.draw_default.displaytext(str(time_now.strftime("%H:%M")), self._drawSetting['videoinfo.time_now.fontsize'], 10, self._drawSetting['videoinfo.time_now.height_margin'], 'left', (self._ConfigDefault['color.white']))
-        addtonow = time_now + timedelta(minutes=(minutes_timetotal-minutes_time))
+        addtonow = time_now + timedelta(seconds=(seconds_timetotal-seconds_time))
         self.draw_default.displaytext(str(addtonow.strftime("%H:%M")), self._drawSetting['videoinfo.time_end.fontsize'], self.screen.get_width()-10, self._drawSetting['videoinfo.time_end.height_margin'], 'right', (self._ConfigDefault['color.white']))
-    
+
         margin_progessbar = self._drawSetting['videoinfo.progressbar.margin_top']+self._drawSetting['videoinfo.progressbar.height']+margin_top
-    
-        self.draw_default.displaytext(str(minutes_time), self._drawSetting['videoinfo.time.fontsize'], 62+self._drawSetting['videoinfo.time.margin_left'], margin_progessbar+self._drawSetting['videoinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))
-        self.draw_default.displaytext(str(minutes_timetotal), self._drawSetting['videoinfo.time.fontsize'], self.screen.get_width()-10, margin_progessbar+self._drawSetting['videoinfo.time.margin_top'], 'right', (self._ConfigDefault['color.white']))  
-                
-        self.drawProgressBar(minutes_timetotal, minutes_time, margin_top)
-                
+
+	### pad media_time and media_timetotal with zeros
+	mtime = self.helper.add_zeros(media_time)
+	mtime_total = self.helper.add_zeros(media_timetotal)
+	### position of separator
+	x1 = 62 + self._drawSetting['videoinfo.time.margin_left']
+	x2 = self.screen.get_width()-10
+	x3 = x1 + self.draw_default.get_text_w(mtime,self._drawSetting['videoinfo.time.fontsize'])
+	x4 = x2 - self.draw_default.get_text_w(mtime_total,self._drawSetting['videoinfo.time.fontsize'])
+	x5 = self.draw_default.get_text_w('/',self._drawSetting['videoinfo.time.fontsize']) / 2
+	xx = ((x4 - x3) / 2) + x3 - x5
+	### time played
+        self.draw_default.displaytext(mtime, self._drawSetting['videoinfo.time.fontsize'], x1, margin_progessbar+self._drawSetting['videoinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))
+	### / separator
+        self.draw_default.displaytext("/", self._drawSetting['videoinfo.time.fontsize'], xx, margin_progessbar+self._drawSetting['videoinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))  
+        ### total time
+        self.draw_default.displaytext(mtime_total, self._drawSetting['videoinfo.time.fontsize'], x2, margin_progessbar+self._drawSetting['videoinfo.time.margin_top'], 'right', (self._ConfigDefault['color.white']))  
+
+        self.drawProgressBar(seconds_timetotal, seconds_time, margin_top)
+
         if speed == 1:
             self.screen.blit(self._drawSetting['videoinfo.button.play'], (8, margin_progessbar+8))
         else:

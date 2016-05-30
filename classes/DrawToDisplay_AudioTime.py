@@ -139,19 +139,22 @@ class DrawToDisplay_AudioTime:
 
         margin_progessbar = self._drawSetting['audioinfo.progressbar.margin_top']+self._drawSetting['audioinfo.progressbar.height']+margin_top
 
+	### pad media_time and media_timetotal with zeros
+	mtime = self.helper.add_zeros(media_time)
+	mtime_total = self.helper.add_zeros(media_timetotal)
 	### position of separator
-	x1 = 62+self._drawSetting['audioinfo.time.margin_left']
+	x1 = 62 + self._drawSetting['audioinfo.time.margin_left']
 	x2 = self.screen.get_width()-10
-	x3 = x1 + self.draw_default.get_text_w(media_time,self._drawSetting['audioinfo.time.fontsize'])
-	x4 = x2 - self.draw_default.get_text_w(media_timetotal,self._drawSetting['audioinfo.time.fontsize'])
+	x3 = x1 + self.draw_default.get_text_w(mtime,self._drawSetting['audioinfo.time.fontsize'])
+	x4 = x2 - self.draw_default.get_text_w(mtime_total,self._drawSetting['audioinfo.time.fontsize'])
 	x5 = self.draw_default.get_text_w('/',self._drawSetting['audioinfo.time.fontsize']) / 2
 	xx = ((x4 - x3) / 2) + x3 - x5
 	### time played
-        self.draw_default.displaytext(str(media_time), self._drawSetting['audioinfo.time.fontsize'], x1, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))
+        self.draw_default.displaytext(mtime, self._drawSetting['audioinfo.time.fontsize'], x1, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))
 	### / separator
         self.draw_default.displaytext("/", self._drawSetting['audioinfo.time.fontsize'], xx, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))  
         ### total time
-        self.draw_default.displaytext(str(media_timetotal), self._drawSetting['audioinfo.time.fontsize'], x2, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'right', (self._ConfigDefault['color.white']))  
+        self.draw_default.displaytext(mtime_total, self._drawSetting['audioinfo.time.fontsize'], x2, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'right', (self._ConfigDefault['color.white']))  
 
         self.drawProgressBar(seconds_timetotal, seconds_time, margin_top)
 

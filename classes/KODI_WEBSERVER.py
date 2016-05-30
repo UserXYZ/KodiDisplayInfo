@@ -40,7 +40,6 @@ class KODI_WEBSERVER:
         try:
             parsed_json = self.getJSON('{"jsonrpc": "2.0", "method": "Player.GetActivePlayers", "id": 1}')
             try:
-        	### print("json=",str(parsed_json))
                 return parsed_json['result'][0]['playerid'], parsed_json['result'][0]['type']
             except KeyError:
                 return 0, ""
@@ -51,52 +50,43 @@ class KODI_WEBSERVER:
             print 'Decoding JSON has failed'
             return ""
 
-    def KODI_GetItem(self, playerid):
-        try:
-            parsed_json = self.getJSON('{"jsonrpc": "2.0", "method": "Player.GetItem", "params": { "properties": ["title"], "playerid": '+str(playerid)+' }, "id": "VideoGetItem"}')
-            try:
-                video_title = parsed_json['result']['item']['title']
-                if video_title=="":
-                    video_title = parsed_json['result']['item']['label']
-                return video_title
-            except KeyError:
-                return ""
-            except IndexError:
-                return ""
-        except ValueError:
-            self.helper.printout("[warning]    ", self._ConfigDefault['mesg.red'])
-            print 'Decoding JSON has failed'
-            return ""  
+    def KODI_GetItem(self, playerid, mtype):
+	if mtype == "video":
+    	    try:
+        	parsed_json = self.getJSON('{"jsonrpc": "2.0", "method": "Player.GetItem", "params": { "properties": ["title"], "playerid": '+str(playerid)+' }, "id": "VideoGetItem"}')
+    	    except ValueError:
+        	self.helper.printout("[warning]    ", self._ConfigDefault['mesg.red'])
+        	print 'Decoding JSON has failed'
+        	return ""
+	elif mtype == "audio":
+    	    try:
+        	parsed_json = self.getJSON('{"jsonrpc": "2.0", "method": "Player.GetItem", "params": { "properties": ["title"], "playerid": '+str(playerid)+' }, "id": "AudioGetItem"}')
+    	    except ValueError:
+        	self.helper.printout("[warning]    ", self._ConfigDefault['mesg.red'])
+        	print 'Decoding JSON has failed'
+        	return ""
+	else:
+	    return ""
 
-    def KODI_GetItemA(self, playerid):
-        try:
-            parsed_json = self.getJSON('{"jsonrpc": "2.0", "method": "Player.GetItem", "params": { "properties": ["title"], "playerid": '+str(playerid)+' }, "id": "AudioGetItem"}')
-            try:
-                audio_title = parsed_json['result']['item']['title']
-                if audio_title=="":
-                    audio_title = parsed_json['result']['item']['label']
-                return audio_title
-            except KeyError:
-                return ""
-            except IndexError:
-                return ""
-        except ValueError:
-            self.helper.printout("[warning]    ", self._ConfigDefault['mesg.red'])
-            print 'Decoding JSON has failed'
-            return ""
+	try:
+    	    title = parsed_json['result']['item']['title']
+	    if title=="":
+        	title = parsed_json['result']['item']['label']
+            return title
+	except KeyError:
+    	    return ""
+    	except IndexError:
+    	    return ""
 
     def KODI_GetProperties(self, playerid):
         try:
             parsed_json = self.getJSON('{"jsonrpc": "2.0", "method": "Player.GetProperties", "params": { "playerid": '+str(playerid)+', "properties": ["speed","time","totaltime"] }, "id": 1}')
             try:
-        	### print("Vprop=",parsed_json)
+		### print("Vprop=",parsed_json)
                 speed = parsed_json['result']['speed']
-                ###minutes_time = self.__format_to_minute(parsed_json['result']['time']['hours'],parsed_json['result']['time']['minutes'])
-                ###minutes_timetotal = self.__format_to_minute(parsed_json['result']['totaltime']['hours'], parsed_json['result']['totaltime']['minutes'])
                 media_time = str(parsed_json['result']['time']['hours'])+":"+str(parsed_json['result']['time']['minutes'])+":"+str(parsed_json['result']['time']['seconds'])
                 media_timetotal = str(parsed_json['result']['totaltime']['hours'])+":"+str(parsed_json['result']['totaltime']['minutes'])+":"+str(parsed_json['result']['totaltime']['seconds'])
 
-                ###return speed, minutes_time, minutes_timetotal
                 return speed, media_time, media_timetotal
             except KeyError, e:
                 print "KeyError: " + str(e)

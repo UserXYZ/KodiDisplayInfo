@@ -126,16 +126,16 @@ class DrawToDisplay_VideoTime:
                 max_chars = 17
                 second_title_height_margin = -38
 
-	    ### try to break title
+			### try to break title
             line1 = video_title[0:max_chars].strip()
             line2 = video_title[max_chars:].strip()
 
-	    l=0
-	    for i in re.finditer(r'\s|_',line1):
-	        l=i.end()
-	    if l > 0 and (max_chars - l) < 2:
-		line1 = video_title[0:l].strip()
-        	line2 = video_title[l:].strip()
+			brk=0
+			for i in re.finditer(r'\s|_',line1):
+				brk=i.end()
+			if brk > 0 and (max_chars - l) < 2:
+				line1 = video_title[0:brk].strip()
+				line2 = video_title[brk:].strip()
 
             self.draw_default.displaytext(line1, videoinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['videoinfo.title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
             self.draw_default.displaytext(line2, videoinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['videoinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))

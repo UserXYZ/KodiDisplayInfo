@@ -125,16 +125,16 @@ class DrawToDisplay_AudioTime:
                 second_title_height_margin = -38
                 max_chars = 17
 
-	    ### try to break title
-            line1 = audio_title[0:max_chars].strip()
-            line2 = audio_title[max_chars:].strip()
+			### try to break title
+			line1 = audio_title[0:max_chars].strip()
+			line2 = audio_title[max_chars:].strip()
 
-	    l=0
-	    for i in re.finditer(r'\s|_',line1):
-	        l=i.end()
-	    if l > 0 and (max_chars - l) < 2:
-		line1 = audio_title[0:l].strip()
-        	line2 = audio_title[l:].strip()
+			brk=0
+			for i in re.finditer(r'\s|_',line1):
+				brk=i.end()
+			if brk > 0 and (max_chars - l) < 2:
+				line1 = audio_title[0:brk].strip()
+				line2 = audio_title[brk:].strip()
 
             self.draw_default.displaytext(line1, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
             self.draw_default.displaytext(line2, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
@@ -147,19 +147,19 @@ class DrawToDisplay_AudioTime:
 
         margin_progessbar = self._drawSetting['audioinfo.progressbar.margin_top']+self._drawSetting['audioinfo.progressbar.height']+margin_top
 
-	### pad media_time and media_timetotal with zeros
-	mtime = self.helper.add_zeros(media_time)
-	mtime_total = self.helper.add_zeros(media_timetotal)
-	### position of separator
-	x1 = 62 + self._drawSetting['audioinfo.time.margin_left']
-	x2 = self.screen.get_width()-10
-	x3 = x1 + self.draw_default.get_text_w(mtime,self._drawSetting['audioinfo.time.fontsize'])
-	x4 = x2 - self.draw_default.get_text_w(mtime_total,self._drawSetting['audioinfo.time.fontsize'])
-	x5 = self.draw_default.get_text_w('/',self._drawSetting['audioinfo.time.fontsize']) / 2
-	xx = ((x4 - x3) / 2) + x3 - x5
-	### time played
+		### pad media_time and media_timetotal with zeros
+		mtime = self.helper.add_zeros(media_time)
+		mtime_total = self.helper.add_zeros(media_timetotal)
+		### position of separator
+		x1 = 62 + self._drawSetting['audioinfo.time.margin_left']
+		x2 = self.screen.get_width()-10
+		x3 = x1 + self.draw_default.get_text_w(mtime,self._drawSetting['audioinfo.time.fontsize'])
+		x4 = x2 - self.draw_default.get_text_w(mtime_total,self._drawSetting['audioinfo.time.fontsize'])
+		x5 = self.draw_default.get_text_w('/',self._drawSetting['audioinfo.time.fontsize']) / 2
+		xx = ((x4 - x3) / 2) + x3 - x5
+		### time played
         self.draw_default.displaytext(mtime, self._drawSetting['audioinfo.time.fontsize'], x1, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))
-	### / separator
+		### / separator
         self.draw_default.displaytext("/", self._drawSetting['audioinfo.time.fontsize'], xx, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))  
         ### total time
         self.draw_default.displaytext(mtime_total, self._drawSetting['audioinfo.time.fontsize'], x2, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'right', (self._ConfigDefault['color.white']))  

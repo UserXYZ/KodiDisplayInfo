@@ -1,4 +1,11 @@
-# KodiDisplayInfo
+# KodiDisplayInfo - Floyd's
+
+This is my enhanced version of KodiDisplayInfo, with separate audio and video classes, and added support for scrollable media title and smart title breaking in two lines.
+
+It is primarily developed for 320x240 pixels display on Odroid C1, therefore changes are not verified on other displays.
+
+Original description follows:
+
 KodiDisplayInfo is a little Python/Pygame tool for small LCD TFT displays, which can be placed on the Raspberry Pi or similar single-board computer.
 
 ![KodiDisplayInfo Movie runtime notification 480x320](http://www.opendisplaycase.com/fileadmin/images/opendisplaycase/kodidisplayinfo/kodidisplayinfo-2.png "KodiDisplayInfo Movie runtime notification 480x320")
@@ -9,10 +16,6 @@ Supported screen resolutions
 * 480x320 -> 3.5 inch or 4.0 inch
 
 like Watterott RPi Display B/B+ 2.8", Adafruit PiTFT (Plus) 3.5" 480x320, TinyLCD 3.5" and so on ...
-
-###Support the project
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=BUV6SF9ZYZEHJ)
-[![paypal](https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5XSJRGGGQD76U)
 
 ###Installation guidelines
 [EN-Version http://www.opendisplaycase.com/kodidisplayinfo.html](http://www.opendisplaycase.com/kodidisplayinfo.html)

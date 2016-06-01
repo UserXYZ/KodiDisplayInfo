@@ -15,7 +15,7 @@ Supported screen resolutions
 * 480x272 -> 4.3 inch
 * 480x320 -> 3.5 inch or 4.0 inch
 
-like Watterott RPi Display B/B+ 2.8", Adafruit PiTFT (Plus) 3.5" 480x320, TinyLCD 3.5" and so on ...
+like Watterott RPi Display B/B+ 2.8", Adafruit PiTFT (Plus) 3.5" 480x320, TinyLCD 3.5", displays based on ILI9341 and so on ...
 
 ###Installation guidelines
 [EN-Version http://www.opendisplaycase.com/kodidisplayinfo.html](http://www.opendisplaycase.com/kodidisplayinfo.html)

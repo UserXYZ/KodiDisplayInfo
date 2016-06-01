@@ -1,4 +1,5 @@
 from datetime import timedelta
+import re
 
 class DrawToDisplay_VideoTime:
     
@@ -108,30 +109,34 @@ class DrawToDisplay_VideoTime:
         seconds_timetotal = self.helper.get_sec(media_timetotal)
 
         if len(video_title)>15 and self._ConfigDefault['config.movietitleformat']=="twoline":
-            max_word_count = 21
+
             if self._ConfigDefault['display.resolution']=="480x320":
                 videoinfo_title_fontsize = 49
                 margin_top = -18
                 second_title_height_margin = -46
+                max_chars = 16
             if self._ConfigDefault['display.resolution']=="480x272":
                 videoinfo_title_fontsize = 42
                 margin_top = -11
                 second_title_height_margin = -40
+                max_chars = 16
             if self._ConfigDefault['display.resolution']=="320x240":
                 videoinfo_title_fontsize = 40
                 margin_top = -16
-                max_word_count = 16
+                max_chars = 17
                 second_title_height_margin = -38
+
 	    ### try to break title
-            try:
-        	last_space = video_title.rindex(' ', 0, max_word_count);
-        	old_video_title = video_title
-        	line1 = old_video_title[0:last_space].strip()
-        	line2 = old_video_title[last_space:].strip()
-	    except ValueError:
-		line1 = video_title
-		line2 = ""
-		
+            line1 = video_title[0:max_chars].strip()
+            line2 = video_title[max_chars:].strip()
+
+	    l=0
+	    for i in re.finditer(r'\s|_',line1):
+	        l=i.end()
+	    if l > 0 and (max_chars - l) < 2:
+		line1 = video_title[0:l].strip()
+        	line2 = video_title[l:].strip()
+
             self.draw_default.displaytext(line1, videoinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['videoinfo.title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
             self.draw_default.displaytext(line2, videoinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['videoinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
         else:

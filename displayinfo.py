@@ -175,25 +175,34 @@ def main():
 	    ### get type of player
             playerid, playertype = KODI_WEBSERVER.KODI_GetActivePlayers()
 
-            if (playertype=="video" and int(playerid) > 0) or (playertype=="audio" and int(playerid) >= 0):
+            if playertype=="video" and int(playerid) > 0:
 		### video player active
-        	if playertype=="video":
-            	    if _ConfigDefault['config.watchmodus']=="livetv":
-                	title = KODI_WEBSERVER.KODI_GetItem(playerid, "video")
-            	    else:
-                	if title == "":
-                    	    title = KODI_WEBSERVER.KODI_GetItem(playerid, "video")
-                    	    helper.printout("[info]    ", _ConfigDefault['mesg.green'])
-                    	    print "Video: " + title
+            	if _ConfigDefault['config.watchmodus']=="livetv":
+            	    title = KODI_WEBSERVER.KODI_GetItem(playerid, "video").strip()
+		else:
+            	    if title == "":
+                        title = KODI_WEBSERVER.KODI_GetItem(playerid, "video").strip()
+                        helper.printout("[info]    ", _ConfigDefault['mesg.green'])
+                        print "Video: " + title
+
+		### get status times
+            	speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
+            	### convert media_timetotal to seconds
+            	seconds_timetotal = helper.get_sec(media_timetotal)
+
+            	if seconds_timetotal>0:
+            	    if _ConfigDefault['config.screenmodus']=="time":
+            		draw_videotime.drawProperties(title, time_now, speed, media_time, media_timetotal)
 		### audio player active
-		elif playertype=="audio":
-            	    if _ConfigDefault['config.watchmodus']=="livetv":
-			title = KODI_WEBSERVER.KODI_GetItem(playerid, "audio")
-            	    else:
-                	if title == "":
-                    	    title = KODI_WEBSERVER.KODI_GetItem(playerid, "audio")
-                    	    helper.printout("[info]    ", _ConfigDefault['mesg.green'])
-                    	    print "Audio: " + title
+	    elif playertype=="audio" and int(playerid) >= 0:
+            	if _ConfigDefault['config.watchmodus']=="livetv":
+		    title = KODI_WEBSERVER.KODI_GetItem(playerid, "audio").strip()
+            	else:
+            	    if title == "":
+                        title = KODI_WEBSERVER.KODI_GetItem(playerid, "audio").strip()
+                        helper.printout("[info]    ", _ConfigDefault['mesg.green'])
+                        print "Audio: " + title
+
 		### get status times
             	speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
             	### convert media_timetotal to seconds

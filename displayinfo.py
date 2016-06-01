@@ -12,6 +12,10 @@
 #         Published GitHub 03.10.2015
 # v3.1    Watchmodus integration -> film (default), livetv [Asks the title more than once.]
 # v3.2    Optimization movie title -> MOVIETITLEFORMAT -> oneline (default), twoline [smaller font size and optimized for two lines]
+###
+### Floyd's modifications
+# add separate audio display class, so you can have different setting s for audio and video display
+# modify display, add title folding in two line mode on space and underscore
 
 import os
 import sys

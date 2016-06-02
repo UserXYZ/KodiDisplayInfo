@@ -98,5 +98,3 @@ class KODI_WEBSERVER:
             self.helper.printout("[warning]    ", self._ConfigDefault['mesg.red'])
             print 'Decoding JSON has failed'
             return 0,0,0
-
-

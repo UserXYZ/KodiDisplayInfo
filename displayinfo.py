@@ -74,7 +74,7 @@ helper = Helper(_ConfigDefault)
 # init config
 helper.printout("[info]    ", _ConfigDefault['mesg.green'])
 print "Parse Config"
-configParser = ConfigParser.RawConfigParser()   
+configParser = ConfigParser.RawConfigParser()
 configFilePath = r''+basedirpath+'config.txt'
 configParser.read(configFilePath)
 
@@ -86,7 +86,7 @@ if configParser.has_option('CONFIG', 'SCREENMODUS'):
     else:
         helper.printout("[warning]    ", _ConfigDefault['mesg.yellow'])
         print "Config [CONFIG] SCREENMODUS not set correctly - default is active!"
-     
+
 if configParser.has_option('CONFIG', 'WATCHMODUS'):
     temp = configParser.get('CONFIG', 'WATCHMODUS')
     if temp=="film" or temp=="livetv":
@@ -127,7 +127,7 @@ if configParser.has_option('KODI_WEBSERVER', 'USER'):
     _ConfigDefault['KODI.webserver.user'] = configParser.get('KODI_WEBSERVER', 'USER')
 if configParser.has_option('KODI_WEBSERVER', 'PASS'):
     _ConfigDefault['KODI.webserver.pass'] = configParser.get('KODI_WEBSERVER', 'PASS')        
-        
+
 if configParser.has_option('COLOR', 'BLACK'):
     _ConfigDefault['color.black'] = helper.HTMLColorToRGB(configParser.get('COLOR', 'BLACK'))
 if configParser.has_option('COLOR', 'WHITE'):
@@ -176,6 +176,7 @@ def main():
             time_now = datetime.datetime.now()
             #start draw
             screen.fill(_ConfigDefault['color.black']) #reset
+            #screen.fill((0,0,0))
 	    ### get type of player
             playerid, playertype = KODI_WEBSERVER.KODI_GetActivePlayers()
 

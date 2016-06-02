@@ -86,7 +86,6 @@ class KODI_WEBSERVER:
                 speed = parsed_json['result']['speed']
                 media_time = str(parsed_json['result']['time']['hours'])+":"+str(parsed_json['result']['time']['minutes'])+":"+str(parsed_json['result']['time']['seconds'])
                 media_timetotal = str(parsed_json['result']['totaltime']['hours'])+":"+str(parsed_json['result']['totaltime']['minutes'])+":"+str(parsed_json['result']['totaltime']['seconds'])
-
                 return speed, media_time, media_timetotal
             except KeyError, e:
                 print "KeyError: " + str(e)

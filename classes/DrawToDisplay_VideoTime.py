@@ -109,7 +109,6 @@ class DrawToDisplay_VideoTime:
         seconds_timetotal = self.helper.get_sec(media_timetotal)
 
         if len(video_title)>15 and self._ConfigDefault['config.movietitleformat']=="twoline":
-
             if self._ConfigDefault['display.resolution']=="480x320":
                 videoinfo_title_fontsize = 49
                 margin_top = -18

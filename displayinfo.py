@@ -174,9 +174,9 @@ def main():
                 #    running = False
 
             time_now = datetime.datetime.now()
+
             #start draw
             screen.fill(_ConfigDefault['color.black']) #reset
-            #screen.fill((0,0,0))
 	    ### get type of player
             playerid, playertype = KODI_WEBSERVER.KODI_GetActivePlayers()
 

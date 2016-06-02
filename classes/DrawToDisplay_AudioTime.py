@@ -2,104 +2,103 @@ from datetime import timedelta
 import re
 
 class DrawToDisplay_AudioTime:
-    
+
     # default for 320x240
     _drawSetting = {}
     _drawSetting['audioinfo.progressbar.margin_top'] = 85
     _drawSetting['audioinfo.progressbar.height'] = 25
-    
+
     _drawSetting['audioinfo.button.play'] = ""
     _drawSetting['audioinfo.button.break'] = ""
-    
+
     _drawSetting['audioinfo.title.fontsize'] = 46
     _drawSetting['audioinfo.title.height_margin'] = 4
-    
+
     _drawSetting['audioinfo.time_now.fontsize'] = 60
     _drawSetting['audioinfo.time_now.height_margin'] = 68
     _drawSetting['audioinfo.time_end.fontsize'] = 60
     _drawSetting['audioinfo.time_end.height_margin'] = 68
-    
+
     _drawSetting['audioinfo.time.fontsize'] = 38
     _drawSetting['audioinfo.time.margin_left'] = 0
     _drawSetting['audioinfo.time.margin_top'] = 54
-    
+
     def __init__(self, helper, _ConfigDefault):
         self.helper = helper
         self._ConfigDefault = _ConfigDefault
-        
+
     def setPygameScreen(self, pygame, screen, draw_default):
         self.pygame = pygame
         self.screen = screen
         self.draw_default = draw_default
-        
         getattr(self, 'SetupDrawSetting'+self._ConfigDefault['display.resolution'])()
-    
+
     def SetupDrawSetting320x240(self):
         self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_320x240.png')
-        
+
         self._drawSetting['audioinfo.button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/button_play_320x240.png')
         self._drawSetting['audioinfo.button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/button_break_320x240.png')
-    
+
     def SetupDrawSetting480x272(self):
         self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_480x272.png')
         self._drawSetting['startscreen.clock.fontsize'] = 64
         self._drawSetting['startscreen.clock.height_margin'] = 102
-        
+
         self._drawSetting['audioinfo.progressbar.margin_top'] = 92
         self._drawSetting['audioinfo.progressbar.height'] = 34
-        
+
         self._drawSetting['audioinfo.button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/button_play_480x320.png')
         self._drawSetting['audioinfo.button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/button_break_480x320.png')
-    
+
         self._drawSetting['audioinfo.title.fontsize'] = 60
         self._drawSetting['audioinfo.title.height_margin'] = 5
-    
+
         self._drawSetting['audioinfo.time_now.fontsize'] = 80
         self._drawSetting['audioinfo.time_now.height_margin'] = 86
         self._drawSetting['audioinfo.time_end.fontsize'] = 80
         self._drawSetting['audioinfo.time_end.height_margin'] = 86
-        
+
         self._drawSetting['audioinfo.time.fontsize'] = 81
         self._drawSetting['audioinfo.time.margin_left'] = 14
         self._drawSetting['audioinfo.time.margin_top'] = 83
-    
+
     def SetupDrawSetting480x320(self):
         self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_480x320.png')
         self._drawSetting['startscreen.clock.fontsize'] = 75
         self._drawSetting['startscreen.clock.height_margin'] = 118
-        
+
         self._drawSetting['audioinfo.progressbar.margin_top'] = 120
         self._drawSetting['audioinfo.progressbar.height'] = 34
-        
+
         self._drawSetting['audioinfo.button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/button_play_480x320.png')
         self._drawSetting['audioinfo.button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/button_break_480x320.png')
-    
+
         self._drawSetting['audioinfo.title.fontsize'] = 60
         self._drawSetting['audioinfo.title.height_margin'] = 5
-    
+
         self._drawSetting['audioinfo.time_now.fontsize'] = 80
         self._drawSetting['audioinfo.time_now.height_margin'] = 86
         self._drawSetting['audioinfo.time_end.fontsize'] = 80
         self._drawSetting['audioinfo.time_end.height_margin'] = 86
-        
+
         self._drawSetting['audioinfo.time.fontsize'] = 81
         self._drawSetting['audioinfo.time.margin_left'] = 14
         self._drawSetting['audioinfo.time.margin_top'] = 83
-        
+
     def drawProgressBar(self, play_time, play_time_done, margin_top=0):
         rect_bar = self.pygame.Rect((10,self._drawSetting['audioinfo.progressbar.margin_top']+margin_top), (self.screen.get_width()-20,self._drawSetting['audioinfo.progressbar.height']))
-        
+
         if play_time_done > 0:
             percent_done = int(( 1. * rect_bar.width / play_time ) * play_time_done)
         else:
             percent_done = 0
-          
+
         rect_done = self.pygame.Rect(rect_bar)
         rect_done.width = percent_done
         self.pygame.draw.rect(self.screen, self._ConfigDefault['color.green'], rect_bar)
         self.pygame.draw.rect(self.screen, self._ConfigDefault['color.orange'], rect_done)
         self.pygame.draw.rect(self.screen, self._ConfigDefault['color.white'], rect_bar, 1)
-        
+
     def drawProperties(self, audio_title, time_now, speed, media_time, media_timetotal):
         margin_top = 0
         audioinfo_title_fontsize = self._drawSetting['audioinfo.title.fontsize']
@@ -159,7 +158,7 @@ class DrawToDisplay_AudioTime:
 	xx = ((x4 - x3) / 2) + x3 - x5
 	### time played
         self.draw_default.displaytext(mtime, self._drawSetting['audioinfo.time.fontsize'], x1, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))
-		### / separator
+	### / separator
         self.draw_default.displaytext("/", self._drawSetting['audioinfo.time.fontsize'], xx, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))  
         ### total time
         self.draw_default.displaytext(mtime_total, self._drawSetting['audioinfo.time.fontsize'], x2, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'right', (self._ConfigDefault['color.white']))  

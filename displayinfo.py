@@ -160,7 +160,7 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode(getattr(draw_default, 'Screen'+_ConfigDefault['display.resolution'])(), 0, 32)
     pygame.display.set_caption('KodiDisplayInfo')
-    pygame.mouse.set_visible(0)
+    pygame.mouse.set_visible(1)
 
     draw_default.setPygameScreen(pygame, screen)
     draw_videotime.setPygameScreen(pygame, screen, draw_default)

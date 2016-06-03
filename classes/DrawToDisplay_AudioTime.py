@@ -125,26 +125,26 @@ class DrawToDisplay_AudioTime:
 				max_chars = 17
 
 			### break title
-			#line1 = audio_title[0:max_chars].strip()
-			#line2 = audio_title[max_chars:].strip()
-			#brk=0
-			#for i in re.finditer(r'\s|_',line1):
-			#brk=i.end()
-			#if brk > 0 and (max_chars - l) < 2:
-			#	line1 = audio_title[0:brk].strip()
-			#	line2 = audio_title[brk:].strip()
-			
+			line1 = audio_title[0:max_chars].strip()
+			line2 = audio_title[max_chars:].strip()
+			brk=0
+			for i in re.finditer(r'\s|_',line1):
+				brk = i.end()
+			if brk > 0 and (max_chars - brk) < 2:
+				line1 = audio_title[0:brk].strip()
+				line2 = audio_title[brk:].strip()
+
 			### scroll title
-			tb=0
-			te=0
-			for tb in range(0..len(audio_title)):
-				te = tb + max_chars
-				line1 = audio_title[tb:te].strip()
-				line2 = ""
-				self.draw_default.displaytext(line1, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
-				self.draw_default.displaytext(line2, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
-			#self.draw_default.displaytext(line1, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
-			#self.draw_default.displaytext(line2, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
+			#tb=0
+			#te=0
+			#for tb in range(0..len(audio_title)):
+			#	te = tb + max_chars
+			#	line1 = audio_title[tb:te].strip()
+			#	line2 = ""
+			#	self.draw_default.displaytext(line1, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
+			#	self.draw_default.displaytext(line2, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
+			self.draw_default.displaytext(line1, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
+			self.draw_default.displaytext(line2, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
 		else:
 			self.draw_default.displaytext(audio_title, self._drawSetting['audioinfo.title.fontsize'], 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
 
@@ -167,9 +167,9 @@ class DrawToDisplay_AudioTime:
 		### time played
 		self.draw_default.displaytext(mtime, self._drawSetting['audioinfo.time.fontsize'], x1, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))
 		### / separator
-		self.draw_default.displaytext("/", self._drawSetting['audioinfo.time.fontsize'], xx, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))  
+		self.draw_default.displaytext("/", self._drawSetting['audioinfo.time.fontsize'], xx, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))
 		### total time
-		self.draw_default.displaytext(mtime_total, self._drawSetting['audioinfo.time.fontsize'], x2, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'right', (self._ConfigDefault['color.white']))  
+		self.draw_default.displaytext(mtime_total, self._drawSetting['audioinfo.time.fontsize'], x2, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'right', (self._ConfigDefault['color.white']))
 
 		self.drawProgressBar(seconds_timetotal, seconds_time, margin_top)
 

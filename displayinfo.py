@@ -66,7 +66,9 @@ _ConfigDefault = {
     "color.white":              WHITE,
     "color.red":                RED,
     "color.orange":             ORANGE,
-    "color.green":              GREEN
+    "color.green":              GREEN,
+
+    "title.start":		0
     }
 
 helper = Helper(_ConfigDefault)
@@ -101,7 +103,7 @@ if configParser.has_option('CONFIG', 'MOVIETITLEFORMAT'):
         _ConfigDefault['config.movietitleformat'] = temp
     else:
         helper.printout("[warning]    ", _ConfigDefault['mesg.yellow'])
-        print "Config [CONFIG] MOVIETITLEFORMAT not set correctly - default is active!"  
+        print "Config [CONFIG] MOVIETITLEFORMAT not set correctly - default is active!"
 
 if configParser.has_option('CONFIG', 'MUSICTITLEFORMAT'):
     temp = configParser.get('CONFIG', 'MUSICTITLEFORMAT')
@@ -109,7 +111,7 @@ if configParser.has_option('CONFIG', 'MUSICTITLEFORMAT'):
         _ConfigDefault['config.musictitleformat'] = temp
     else:
         helper.printout("[warning]    ", _ConfigDefault['mesg.yellow'])
-        print "Config [CONFIG] MUSICTITLEFORMAT not set correctly - default is active!"  
+        print "Config [CONFIG] MUSICTITLEFORMAT not set correctly - default is active!"
 
 if configParser.has_option('DISPLAY', 'RESOLUTION'):
     temp = configParser.get('DISPLAY', 'RESOLUTION')
@@ -126,7 +128,7 @@ if configParser.has_option('KODI_WEBSERVER', 'PORT'):
 if configParser.has_option('KODI_WEBSERVER', 'USER'):
     _ConfigDefault['KODI.webserver.user'] = configParser.get('KODI_WEBSERVER', 'USER')
 if configParser.has_option('KODI_WEBSERVER', 'PASS'):
-    _ConfigDefault['KODI.webserver.pass'] = configParser.get('KODI_WEBSERVER', 'PASS')        
+    _ConfigDefault['KODI.webserver.pass'] = configParser.get('KODI_WEBSERVER', 'PASS')
 
 if configParser.has_option('COLOR', 'BLACK'):
     _ConfigDefault['color.black'] = helper.HTMLColorToRGB(configParser.get('COLOR', 'BLACK'))
@@ -150,6 +152,7 @@ def main_exit():
 def main():
     time_now = 0
     title = ""
+    tt = ""
 
     helper.printout("[info]    ", _ConfigDefault['mesg.cyan'])
     print "Start: KodiDisplayInfo"
@@ -166,7 +169,7 @@ def main():
     running = True
     # run the game loop
     try:
-        while running: 
+        while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -175,20 +178,23 @@ def main():
 
             time_now = datetime.datetime.now()
 
-            #start draw
-            screen.fill(_ConfigDefault['color.black']) #reset
+            ###start draw, clear screen first
+            screen.fill(_ConfigDefault['color.black'])
 	    ### get type of player
             playerid, playertype = KODI_WEBSERVER.KODI_GetActivePlayers()
 
 	    ### video player active
             if playertype=="video" and int(playerid) > 0:
             	if _ConfigDefault['config.watchmodus']=="livetv":
-            	    title = KODI_WEBSERVER.KODI_GetItem(playerid, "video").strip()
+            	    tt = KODI_WEBSERVER.KODI_GetItem(playerid, "video").strip()
 		else:
-            	    if title == "":
-                        title = KODI_WEBSERVER.KODI_GetItem(playerid, "video").strip()
+            	    if tt == "":
+                        tt = KODI_WEBSERVER.KODI_GetItem(playerid, "video").strip()
                         helper.printout("[info]    ", _ConfigDefault['mesg.green'])
-                        print "Video: " + title
+                        print "Video: " + tt
+
+		### get title starting position
+		title = tt[_ConfigDefault['title.start']:]
 
 		### get status times
             	speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
@@ -201,12 +207,15 @@ def main():
 	    ### audio player active
 	    elif playertype=="audio" and int(playerid) >= 0:
                 if _ConfigDefault['config.watchmodus']=="livetv":
-		    title = KODI_WEBSERVER.KODI_GetItem(playerid, "audio").strip()
+		    tt = KODI_WEBSERVER.KODI_GetItem(playerid, "audio").strip()
             	else:
-            	    if title == "":
-                        title = KODI_WEBSERVER.KODI_GetItem(playerid, "audio").strip()
+            	    if tt == "":
+                        tt = KODI_WEBSERVER.KODI_GetItem(playerid, "audio").strip()
                         helper.printout("[info]    ", _ConfigDefault['mesg.green'])
-                        print "Audio: " + title
+                        print "Audio: " + tt
+
+		### get title starting position
+		title = tt[_ConfigDefault['title.start']:]
 
 		### get status times
 		speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
@@ -226,7 +235,7 @@ def main():
 
             time.sleep(1)
             pygame.display.update()
-
+	### window closed, normal exit
         helper.printout("[end]     ", _ConfigDefault['mesg.magenta'])
         print "bye ..."
         main_exit()

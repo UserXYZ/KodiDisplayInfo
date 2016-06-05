@@ -229,6 +229,7 @@ def main():
             else:
                 # API has nothing
                 title = ""
+                tt = ""
                 draw_default.drawLogoStartScreen(time_now)
 
             pygame.display.flip()

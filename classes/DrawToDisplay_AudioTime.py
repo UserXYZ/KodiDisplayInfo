@@ -124,25 +124,27 @@ class DrawToDisplay_AudioTime:
 				second_title_height_margin = -38
 				max_chars = 17
 			
+			"""
 			### break title
 			line1 = audio_title[0:max_chars].strip()
 			line2 = audio_title[max_chars:].strip()
 			brk=0
 			for i in re.finditer(r'\s|_',line1):
-			    brk=i.end()
+				brk=i.end()
 			if brk > 0 and (max_chars - brk) < 2:
 				line1 = audio_title[0:brk].strip()
 				line2 = audio_title[brk:].strip()
-			
 			"""
-			### scroll title
-			for tb in range(0,len(audio_title)):
-				te = tb + max_chars
-				line1 = audio_title[tb:te].strip()
-				line2 = ""
-				self.draw_default.displaytext(line1, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
-				self.draw_default.displaytext(line2, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
-			"""
+			### make line1 based on start position in the title
+			line1 = audio_title[self._ConfigDefault['title.start']:self._ConfigDefault['title.start']+max_chars]
+			line2 = ""
+			print "pre: "+str(self._ConfigDefault['title.start'])
+			if self._ConfigDefault['title.start'] < len(audio_title):
+				self._ConfigDefault['title.start'] += 1
+			else:
+				self._ConfigDefault['title.start'] = 0
+			print "posle: "+str(self._ConfigDefault['title.start'])
+
 			self.draw_default.displaytext(line1, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
 			self.draw_default.displaytext(line2, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
 		else:

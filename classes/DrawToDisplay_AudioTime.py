@@ -11,7 +11,7 @@ class DrawToDisplay_AudioTime:
 	_drawSetting['audioinfo.button.play'] = ""
 	_drawSetting['audioinfo.button.break'] = ""
 
-	_drawSetting['audioinfo.title.fontsize'] = 46
+	_drawSetting['audioinfo.title.fontsize'] = 40
 	_drawSetting['audioinfo.title.height_margin'] = 4
 
 	_drawSetting['audioinfo.time_now.fontsize'] = 60
@@ -22,6 +22,8 @@ class DrawToDisplay_AudioTime:
 	_drawSetting['audioinfo.time.fontsize'] = 38
 	_drawSetting['audioinfo.time.margin_left'] = 0
 	_drawSetting['audioinfo.time.margin_top'] = 54
+	
+	_drawSetting['title_start'] = 0
 
 	def __init__(self, helper, _ConfigDefault):
 		self.helper = helper
@@ -102,54 +104,57 @@ class DrawToDisplay_AudioTime:
 	def drawProperties(self, audio_title, time_now, speed, media_time, media_timetotal):
 		margin_top = 0
 		audioinfo_title_fontsize = self._drawSetting['audioinfo.title.fontsize']
-
 		### convert media_time and media_timetotal to seconds
 		seconds_time = self.helper.get_sec(media_time)
 		seconds_timetotal = self.helper.get_sec(media_timetotal)
-
-		if len(audio_title)>15 and self._ConfigDefault['config.musictitleformat']=="twoline":
-			if self._ConfigDefault['display.resolution']=="480x320":
-				audioinfo_title_fontsize = 49
-				margin_top = -18
-				second_title_height_margin = -46
-				max_chars = 17
-			if self._ConfigDefault['display.resolution']=="480x272":
-				audioinfo_title_fontsize = 42
-				margin_top = -11
-				second_title_height_margin = -40
-				max_chars = 17
-			if self._ConfigDefault['display.resolution']=="320x240":
-				audioinfo_title_fontsize = 40
-				margin_top = -16
-				second_title_height_margin = -38
-				max_chars = 17
-			
-			"""
-			### break title
-			line1 = audio_title[0:max_chars].strip()
-			line2 = audio_title[max_chars:].strip()
-			brk=0
-			for i in re.finditer(r'\s|_',line1):
-				brk=i.end()
-			if brk > 0 and (max_chars - brk) < 2:
-				line1 = audio_title[0:brk].strip()
-				line2 = audio_title[brk:].strip()
-			"""
-			### make line1 based on start position in the title
-			line1 = audio_title[self._ConfigDefault['title.start']:self._ConfigDefault['title.start']+max_chars]
-			line2 = ""
-			print "pre: "+str(self._ConfigDefault['title.start'])
-			if self._ConfigDefault['title.start'] < len(audio_title):
-				self._ConfigDefault['title.start'] += 1
+		### configure for resolutions
+		if self._ConfigDefault['display.resolution']=="480x320":
+			audioinfo_title_fontsize = 49
+			margin_top = -18
+			second_title_height_margin = -46
+			max_chars = 17
+		if self._ConfigDefault['display.resolution']=="480x272":
+			audioinfo_title_fontsize = 42
+			margin_top = -11
+			second_title_height_margin = -40
+			max_chars = 17
+		if self._ConfigDefault['display.resolution']=="320x240":
+			audioinfo_title_fontsize = 40
+			margin_top = -16
+			second_title_height_margin = -38
+			max_chars = 18
+		### if we want two line display
+		if self._ConfigDefault['config.musictitleformat']=="twoline":
+			### if title is longer than max_chars, break into two lines
+			if len(audio_title) > max_chars:
+				### break title
+				line1 = audio_title[0:max_chars].strip()
+				line2 = audio_title[max_chars:].strip()
+				brk=0
+				for i in re.finditer(r'\s|_',line1):
+					brk=i.end()
+				if brk > 0 and (max_chars - brk) < 2:
+					line1 = audio_title[0:brk].strip()
+					line2 = audio_title[brk:].strip()
+				self.draw_default.displaytext(line1, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
+				self.draw_default.displaytext(line2, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
 			else:
-				self._ConfigDefault['title.start'] = 0
-			print "posle: "+str(self._ConfigDefault['title.start'])
-
-			self.draw_default.displaytext(line1, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
-			self.draw_default.displaytext(line2, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
+				self.draw_default.displaytext(audio_title, self._drawSetting['audioinfo.title.fontsize'], 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
+		### if we want single line display
 		else:
-			self.draw_default.displaytext(audio_title, self._drawSetting['audioinfo.title.fontsize'], 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
+			### scroll title if needed
+			if len(audio_title) > max_chars:
+				### make buffer based on start position in the title
+				buff = audio_title[self._drawSetting['title_start']:self._drawSetting['title_start'] + max_chars]
+				if (self._drawSetting['title_start'] + max_chars) < len(audio_title):
+					self._drawSetting['title_start'] += 1
+				else:
+					self._drawSetting['title_start'] = 0
+				self.draw_default.displaytext(buff, self._drawSetting['audioinfo.title.fontsize'], 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
+			else:
+				self.draw_default.displaytext(audio_title, self._drawSetting['audioinfo.title.fontsize'], 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
 
+		### draw time
 		self.draw_default.displaytext(str(time_now.strftime("%H:%M")), self._drawSetting['audioinfo.time_now.fontsize'], 10, self._drawSetting['audioinfo.time_now.height_margin'], 'left', (self._ConfigDefault['color.white']))
 		addtonow = time_now + timedelta(seconds=(seconds_timetotal-seconds_time))
 		self.draw_default.displaytext(str(addtonow.strftime("%H:%M")), self._drawSetting['audioinfo.time_end.fontsize'], self.screen.get_width()-10, self._drawSetting['audioinfo.time_end.height_margin'], 'right', (self._ConfigDefault['color.white']))

@@ -67,8 +67,6 @@ _ConfigDefault = {
     "color.red":                RED,
     "color.orange":             ORANGE,
     "color.green":              GREEN,
-
-    "title.start":		0
     }
 
 helper = Helper(_ConfigDefault)
@@ -152,7 +150,6 @@ def main_exit():
 def main():
     time_now = 0
     title = ""
-    tt = ""
 
     helper.printout("[info]    ", _ConfigDefault['mesg.cyan'])
     print "Start: KodiDisplayInfo"
@@ -186,15 +183,12 @@ def main():
 	    ### video player active
             if playertype=="video" and int(playerid) > 0:
             	if _ConfigDefault['config.watchmodus']=="livetv":
-            	    tt = KODI_WEBSERVER.KODI_GetItem(playerid, "video").strip()
+            	    title = KODI_WEBSERVER.KODI_GetItem(playerid, "video").strip()
 		else:
-            	    if tt == "":
-                        tt = KODI_WEBSERVER.KODI_GetItem(playerid, "video").strip()
+            	    if title == "":
+                        title = KODI_WEBSERVER.KODI_GetItem(playerid, "video").strip()
                         helper.printout("[info]    ", _ConfigDefault['mesg.green'])
-                        print "Video: " + tt
-
-		### get title starting position
-		title = tt[_ConfigDefault['title.start']:]
+                        print "Video: " + title
 
 		### get status times
             	speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
@@ -207,15 +201,12 @@ def main():
 	    ### audio player active
 	    elif playertype=="audio" and int(playerid) >= 0:
                 if _ConfigDefault['config.watchmodus']=="livetv":
-		    tt = KODI_WEBSERVER.KODI_GetItem(playerid, "audio").strip()
+		    title = KODI_WEBSERVER.KODI_GetItem(playerid, "audio").strip()
             	else:
-            	    if tt == "":
-                        tt = KODI_WEBSERVER.KODI_GetItem(playerid, "audio").strip()
+            	    if title == "":
+                        title = KODI_WEBSERVER.KODI_GetItem(playerid, "audio").strip()
                         helper.printout("[info]    ", _ConfigDefault['mesg.green'])
-                        print "Audio: " + tt
-
-		### get title starting position
-		title = tt[_ConfigDefault['title.start']:]
+                        print "Audio: " + title
 
 		### get status times
 		speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
@@ -229,7 +220,6 @@ def main():
             else:
                 # API has nothing
                 title = ""
-                tt = ""
                 draw_default.drawLogoStartScreen(time_now)
 
             pygame.display.flip()

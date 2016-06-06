@@ -188,7 +188,7 @@ def main():
 					if title == "":
 						title = KODI_WEBSERVER.KODI_GetItem(playerid, "video").strip()
 						helper.printout("[info]    ", _ConfigDefault['mesg.green'])
-						print "Video: " + title
+						### print "Video: " + title # ne radi sa unicode karakterima
 
 				### get status times
 				speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
@@ -206,7 +206,7 @@ def main():
 					if title == "":
 						title = KODI_WEBSERVER.KODI_GetItem(playerid, "audio").strip()
 						helper.printout("[info]    ", _ConfigDefault['mesg.green'])
-						print "Audio: " + title
+						### print "Audio: " + title # ne radi sa unicode karakterima
 
 				### get status times
 				speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)

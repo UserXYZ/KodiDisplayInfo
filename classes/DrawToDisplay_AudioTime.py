@@ -22,12 +22,13 @@ class DrawToDisplay_AudioTime:
 	_drawSetting['audioinfo.time.fontsize'] = 38
 	_drawSetting['audioinfo.time.margin_left'] = 0
 	_drawSetting['audioinfo.time.margin_top'] = 54
-	
+
 	_drawSetting['title_start'] = 0
 
 	def __init__(self, helper, _ConfigDefault):
 		self.helper = helper
 		self._ConfigDefault = _ConfigDefault
+		self._drawSetting['title_start'] = 0
 
 	def setPygameScreen(self, pygame, screen, draw_default):
 		self.pygame = pygame
@@ -40,7 +41,7 @@ class DrawToDisplay_AudioTime:
 
 		self._drawSetting['audioinfo.button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/button_play_320x240.png')
 		self._drawSetting['audioinfo.button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/button_break_320x240.png')
-
+	"""
 	def SetupDrawSetting480x272(self):
 		self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_480x272.png')
 		self._drawSetting['startscreen.clock.fontsize'] = 64
@@ -86,7 +87,7 @@ class DrawToDisplay_AudioTime:
 		self._drawSetting['audioinfo.time.fontsize'] = 81
 		self._drawSetting['audioinfo.time.margin_left'] = 14
 		self._drawSetting['audioinfo.time.margin_top'] = 83
-
+	"""
 	def drawProgressBar(self, play_time, play_time_done, margin_top=0):
 		rect_bar = self.pygame.Rect((10,self._drawSetting['audioinfo.progressbar.margin_top']+margin_top), (self.screen.get_width()-20,self._drawSetting['audioinfo.progressbar.height']))
 
@@ -108,6 +109,7 @@ class DrawToDisplay_AudioTime:
 		seconds_time = self.helper.get_sec(media_time)
 		seconds_timetotal = self.helper.get_sec(media_timetotal)
 		### configure for resolutions
+		"""
 		if self._ConfigDefault['display.resolution']=="480x320":
 			audioinfo_title_fontsize = 49
 			margin_top = -18
@@ -118,11 +120,12 @@ class DrawToDisplay_AudioTime:
 			margin_top = -11
 			second_title_height_margin = -40
 			max_chars = 17
+		"""
 		if self._ConfigDefault['display.resolution']=="320x240":
 			audioinfo_title_fontsize = 40
 			margin_top = -16
 			second_title_height_margin = -38
-			max_chars = 18
+			max_chars = 14
 		### if we want two line display
 		if self._ConfigDefault['config.musictitleformat']=="twoline":
 			### if title is longer than max_chars, break into two lines
@@ -156,9 +159,7 @@ class DrawToDisplay_AudioTime:
 
 		### draw time
 		self.draw_default.displaytext(str(time_now.strftime("%H:%M")), self._drawSetting['audioinfo.time_now.fontsize'], 10, self._drawSetting['audioinfo.time_now.height_margin'], 'left', (self._ConfigDefault['color.white']))
-		addtonow = time_now + timedelta(seconds=(seconds_timetotal-seconds_time))
-		self.draw_default.displaytext(str(addtonow.strftime("%H:%M")), self._drawSetting['audioinfo.time_end.fontsize'], self.screen.get_width()-10, self._drawSetting['audioinfo.time_end.height_margin'], 'right', (self._ConfigDefault['color.white']))
-
+		### calculate progress bar
 		margin_progessbar = self._drawSetting['audioinfo.progressbar.margin_top']+self._drawSetting['audioinfo.progressbar.height']+margin_top
 
 		### pad media_time and media_timetotal with zeros
@@ -177,10 +178,10 @@ class DrawToDisplay_AudioTime:
 		self.draw_default.displaytext("/", self._drawSetting['audioinfo.time.fontsize'], xx, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))
 		### total time
 		self.draw_default.displaytext(mtime_total, self._drawSetting['audioinfo.time.fontsize'], x2, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'right', (self._ConfigDefault['color.white']))
-
+		### draw progress bar
 		self.drawProgressBar(seconds_timetotal, seconds_time, margin_top)
-
-		if speed == 1:
+		### draw play/pause button
+		if speed == 1: ### play
 			self.screen.blit(self._drawSetting['audioinfo.button.play'], (8, margin_progessbar+8))
-		else:
+		else: ### pause
 			self.screen.blit(self._drawSetting['audioinfo.button.break'], (8, margin_progessbar+8))

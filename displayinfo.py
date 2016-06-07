@@ -12,11 +12,12 @@
 #         Published GitHub 03.10.2015
 # v3.1    Watchmodus integration -> film (default), livetv [Asks the title more than once.]
 # v3.2    Optimization movie title -> MOVIETITLEFORMAT -> oneline (default), twoline [smaller font size and optimized for two lines]
-# v3.3    Add text scrolling for one line and text breaking for two line title display
 ###
 ### Floyd's modifications
-# add separate audio display class, so you can have different setting s for audio and video display
-# modify display, add title folding in two line mode on space and underscore
+# v3.3    add separate audio display class, so you can have different settings for audio and video display
+# v3.4    modify display, add title folding in two line mode on space and underscore
+# v3.5    Add text scrolling for one line and text breaking for two line title display
+# v3.6    Rewrite text scrolling to go circular; fix printing for unicode titles, hopefully
 
 import os
 import sys
@@ -194,6 +195,7 @@ def main():
 					tt = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "audio")).strip()
 					if tt != title or title == "":
 						title = tt
+						draw_audiotime._drawSetting['title_start'] = 0
 						helper.printout("[info]    ", _ConfigDefault['mesg.green'])
 						print "Video: " + title
 
@@ -213,6 +215,7 @@ def main():
 					tt = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "audio")).strip()
 					if tt != title or title == "":
 						title = tt
+						draw_audiotime._drawSetting['title_start'] = 0
 						helper.printout("[info]    ", _ConfigDefault['mesg.green'])
 						print "Audio: " + title
 

@@ -146,6 +146,7 @@ class DrawToDisplay_VideoTime:
 		### if we want single line display
 		else:
 			### scroll title if needed
+			"""
 			if len(video_title) > max_chars:
 				### make buffer based on start position in the title
 				buff = video_title[self._drawSetting['title_start']:self._drawSetting['title_start'] + max_chars]
@@ -153,8 +154,21 @@ class DrawToDisplay_VideoTime:
 					self._drawSetting['title_start'] += 1
 				else:
 					self._drawSetting['title_start'] = 0
+			"""
+			if len(video_title) > max_chars:
+				vt = video_title + " | "
+				if self._drawSetting['title_start'] + max_chars <= len(vt):
+					buff = vt[self._drawSetting['title_start']:self._drawSetting['title_start'] + max_chars]
+				else:
+					e = max_chars - (len(vt)-self._drawSetting['title_start'] + 1)
+					buff = vt[self._drawSetting['title_start']:] + vt[0:e+1]
+
+				self._drawSetting['title_start'] += 1
+				if self._drawSetting['title_start'] >= len(vt):
+					self._drawSetting['title_start'] = 0
+
 				self.draw_default.displaytext(buff, self._drawSetting['videoinfo.title.fontsize'], 10, self.screen.get_height()-self._drawSetting['videoinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
-			else:
+			else: ### title is shorter than max_chars, show normally
 				self.draw_default.displaytext(video_title, self._drawSetting['videoinfo.title.fontsize'], 10, self.screen.get_height()-self._drawSetting['videoinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
 
 		### draw time

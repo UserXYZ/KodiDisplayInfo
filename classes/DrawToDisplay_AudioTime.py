@@ -146,17 +146,30 @@ class DrawToDisplay_AudioTime:
 		### if we want single line display
 		else:
 			### scroll title if needed
+			"""
 			if len(audio_title) > max_chars:
 				### make buffer based on start position in the title
 				buff = audio_title[self._drawSetting['title_start']:self._drawSetting['title_start'] + max_chars]
-				if (self._drawSetting['title_start'] + max_chars) < len(audio_title):
+				if self._drawSetting['title_start'] + max_chars < len(audio_title) + 3: ### add extra empty space to get nicer scroll
 					self._drawSetting['title_start'] += 1
 				else:
 					self._drawSetting['title_start'] = 0
-				self.draw_default.displaytext(buff, self._drawSetting['audioinfo.title.fontsize'], 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
-			else:
-				self.draw_default.displaytext(audio_title, self._drawSetting['audioinfo.title.fontsize'], 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
+			"""
+			if len(audio_title) > max_chars:
+				at = audio_title + " | "
+				if self._drawSetting['title_start'] + max_chars <= len(at):
+					buff = at[self._drawSetting['title_start']:self._drawSetting['title_start'] + max_chars]
+				else:
+					e = max_chars - (len(at)-self._drawSetting['title_start'] + 1)
+					buff = at[self._drawSetting['title_start']:] + at[0:e+1]
 
+				self._drawSetting['title_start'] += 1
+				if self._drawSetting['title_start'] >= len(at):
+					self._drawSetting['title_start'] = 0
+
+				self.draw_default.displaytext(buff, self._drawSetting['audioinfo.title.fontsize'], 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
+			else: ### title is shorter than max_chars, show normally
+				self.draw_default.displaytext(audio_title, self._drawSetting['audioinfo.title.fontsize'], 10, self.screen.get_height()-self._drawSetting['audioinfo.title.height_margin'], 'left', (self._ConfigDefault['color.white']))
 		### draw time
 		self.draw_default.displaytext(str(time_now.strftime("%H:%M")), self._drawSetting['audioinfo.time_now.fontsize'], 10, self._drawSetting['audioinfo.time_now.height_margin'], 'left', (self._ConfigDefault['color.white']))
 		### calculate progress bar

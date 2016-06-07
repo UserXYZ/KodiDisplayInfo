@@ -24,6 +24,8 @@ import time
 import datetime
 import pygame
 import ConfigParser
+import unicodedata
+import string
 from pygame.locals import *
 from classes.Helper import Helper
 from classes.DrawToDisplay_Default import DrawToDisplay_Default
@@ -144,6 +146,9 @@ if configParser.has_option('COLOR', 'ORANGE'):
 if configParser.get('DISPLAY', 'FBDEV') != "":
 	os.environ["SDL_FBDEV"] = configParser.get('DISPLAY', 'FBDEV')
 
+def remove_control_chars(s):
+	return "".join(ch for ch in s if unicodedata.category(ch)[0]!="C")
+
 def main_exit():
 	pygame.quit()
 	sys.exit()
@@ -174,6 +179,7 @@ def main():
 				#elif event.type == KEYDOWN and event.key == K_ESCAPE:
 					#running = False
 
+			#title = ""
 			time_now = datetime.datetime.now()
 			###start draw, clear screen first
 			screen.fill(_ConfigDefault['color.black'])
@@ -183,12 +189,13 @@ def main():
 			### video player active
 			if playertype == "video" and int(playerid) > 0:
 				if _ConfigDefault['config.watchmodus']=="livetv":
-					title = KODI_WEBSERVER.KODI_GetItem(playerid, "video").strip()
+					title = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "audio")).strip()
 				else:
-					if title == "":
-						title = KODI_WEBSERVER.KODI_GetItem(playerid, "video").strip()
+					tt = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "audio")).strip()
+					if tt != title or title == "":
+						title = tt
 						helper.printout("[info]    ", _ConfigDefault['mesg.green'])
-						### print "Video: " + title # ne radi sa unicode karakterima
+						print "Video: " + title
 
 				### get status times
 				speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
@@ -201,12 +208,13 @@ def main():
 			### audio player active
 			elif playertype == "audio" and int(playerid) >= 0:
 				if _ConfigDefault['config.watchmodus']=="livetv":
-					title = KODI_WEBSERVER.KODI_GetItem(playerid, "audio").strip()
+					title = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "audio")).strip()
 				else:
-					if title == "":
-						title = KODI_WEBSERVER.KODI_GetItem(playerid, "audio").strip()
+					tt = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "audio")).strip()
+					if tt != title or title == "":
+						title = tt
 						helper.printout("[info]    ", _ConfigDefault['mesg.green'])
-						### print "Audio: " + title # ne radi sa unicode karakterima
+						print "Audio: " + title
 
 				### get status times
 				speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)

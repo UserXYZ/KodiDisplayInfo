@@ -174,7 +174,7 @@ class DrawToDisplay_VideoTime:
 		### draw time
 		self.draw_default.displaytext(str(time_now.strftime("%H:%M")), self._drawSetting['videoinfo.time_now.fontsize'], 10, self._drawSetting['videoinfo.time_now.height_margin'], 'left', (self._ConfigDefault['color.white']))
 		### calculate progress bar
-		margin_progessbar = self._drawSetting['videoinfo.progressbar.margin_top']+self._drawSetting['videoinfo.progressbar.height']+margin_top
+		margin_progressbar = self._drawSetting['videoinfo.progressbar.margin_top']+self._drawSetting['videoinfo.progressbar.height']+margin_top
 
 		### pad media_time and media_timetotal with zeros
 		mtime = self.helper.add_zeros(media_time)
@@ -187,15 +187,20 @@ class DrawToDisplay_VideoTime:
 		x5 = self.draw_default.get_text_w('/',self._drawSetting['videoinfo.time.fontsize']) / 2
 		xx = ((x4 - x3) / 2) + x3 - x5
 		### time played
-		self.draw_default.displaytext(mtime, self._drawSetting['videoinfo.time.fontsize'], x1, margin_progessbar+self._drawSetting['videoinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))
+		self.draw_default.displaytext(mtime, self._drawSetting['videoinfo.time.fontsize'], x1, margin_progressbar+self._drawSetting['videoinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))
 		### / separator
-		self.draw_default.displaytext("/", self._drawSetting['videoinfo.time.fontsize'], xx, margin_progessbar+self._drawSetting['videoinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))
+		self.draw_default.displaytext("/", self._drawSetting['videoinfo.time.fontsize'], xx, margin_progressbar+self._drawSetting['videoinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))
 		### total time
-		self.draw_default.displaytext(mtime_total, self._drawSetting['videoinfo.time.fontsize'], x2, margin_progessbar+self._drawSetting['videoinfo.time.margin_top'], 'right', (self._ConfigDefault['color.white']))
+		self.draw_default.displaytext(mtime_total, self._drawSetting['videoinfo.time.fontsize'], x2, margin_progressbar+self._drawSetting['videoinfo.time.margin_top'], 'right', (self._ConfigDefault['color.white']))
 		### draw progress bar
 		self.drawProgressBar(seconds_timetotal, seconds_time, margin_top)
 		### draw play/pause button
 		if speed == 1: ### play
-			self.screen.blit(self._drawSetting['videoinfo.button.play'], (8, margin_progessbar+8))
+			self.screen.blit(self._drawSetting['videoinfo.button.play'], (8, margin_progressbar+8))
 		else: ### pause
-			self.screen.blit(self._drawSetting['videoinfo.button.break'], (8, margin_progessbar+8))
+			self.screen.blit(self._drawSetting['videoinfo.button.break'], (8, margin_progressbar+8))
+
+		### put rectangular areas over clickable buttons
+		r = self._drawSetting['audioinfo.button.play'].get_rect().inflate(-4, -4)
+		self._drawSetting['play_pause'] = Rect((8, margin_progressbar+8), (r[2], r[3]))
+

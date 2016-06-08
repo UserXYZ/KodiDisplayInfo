@@ -81,6 +81,8 @@ print "Parse Config"
 configParser = ConfigParser.RawConfigParser()
 configFilePath = r''+basedirpath+'config.txt'
 configParser.read(configFilePath)
+title = "" # has to be global so that draw_screen can use it only once
+def_scr = "" # default screen exists
 
 # check config
 if configParser.has_option('CONFIG', 'SCREENMODUS'):
@@ -150,13 +152,72 @@ if configParser.get('DISPLAY', 'FBDEV') != "":
 def remove_control_chars(s):
 	return "".join(ch for ch in s if unicodedata.category(ch)[0]!="C")
 
+def draw_screen(screen):
+	global title
+
+	time_now = datetime.datetime.now()
+	###start draw, clear screen first
+	screen.fill(_ConfigDefault['color.black'])
+	### get type of player
+	playerid, playertype = KODI_WEBSERVER.KODI_GetActivePlayers()
+
+	### video player active
+	if playertype == "video" and int(playerid) > 0:
+		if _ConfigDefault['config.watchmodus']=="livetv":
+			title = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "video")).strip()
+		else:
+			tt = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "video")).strip()
+			if tt != title or title == "":
+				title = tt
+				draw_videotime._drawSetting['title_start'] = 0
+				helper.printout("[info]    ", _ConfigDefault['mesg.green'])
+				print "Video: " + title
+
+		### get status times
+		speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
+		### convert media_timetotal to seconds
+		seconds_timetotal = helper.get_sec(media_timetotal)
+
+		if seconds_timetotal > 0:
+			if _ConfigDefault['config.screenmodus']=="time":
+				draw_videotime.drawProperties(title, time_now, speed, media_time, media_timetotal)
+	### audio player active
+	elif playertype == "audio" and int(playerid) >= 0:
+		if _ConfigDefault['config.watchmodus']=="livetv":
+			title = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "audio")).strip()
+		else:
+			tt = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "audio")).strip()
+			if tt != title or title == "":
+				title = tt
+				draw_audiotime._drawSetting['title_start'] = 0
+				helper.printout("[info]    ", _ConfigDefault['mesg.green'])
+				print "Audio: " + title
+
+		### get status times
+		speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
+		### convert media_timetotal to seconds
+		seconds_timetotal = helper.get_sec(media_timetotal)
+
+		if seconds_timetotal > 0:
+			if _ConfigDefault['config.screenmodus']=="time":
+				draw_audiotime.drawProperties(title, time_now, speed, media_time, media_timetotal)
+	### something else
+	else:
+		# API has nothing, clear all values
+		title = ""
+		draw_audiotime._drawSetting['play_pause'] = Rect(0, 0, 0, 0) # null button
+		draw_default.drawLogoStartScreen(time_now)
+		draw_videotime._drawSetting['title_start'] = 0
+		draw_audiotime._drawSetting['title_start'] = 0
+
 def main_exit():
 	pygame.quit()
 	sys.exit()
 
 def main():
-	time_now = 0
-	title = ""
+	UPDATE_SCREEN = 500
+	clock = pygame.time.Clock()
+	update_screen = pygame.USEREVENT + 1
 
 	helper.printout("[info]    ", _ConfigDefault['mesg.cyan'])
 	print "Start: KodiDisplayInfo"
@@ -169,75 +230,34 @@ def main():
 	draw_default.setPygameScreen(pygame, screen)
 	draw_videotime.setPygameScreen(pygame, screen, draw_default)
 	draw_audiotime.setPygameScreen(pygame, screen, draw_default)
-
-	running = True
+	### start timer for screen update
+	pygame.time.set_timer(update_screen, UPDATE_SCREEN)
 	# run the game loop
+	running = True
 	try:
 		while running:
-			for event in pygame.event.get():
-				if event.type == pygame.QUIT:
-					running = False
-				#elif event.type == KEYDOWN and event.key == K_ESCAPE:
-					#running = False
-
-			#title = ""
-			time_now = datetime.datetime.now()
-			###start draw, clear screen first
-			screen.fill(_ConfigDefault['color.black'])
-			### get type of player
-			playerid, playertype = KODI_WEBSERVER.KODI_GetActivePlayers()
-
-			### video player active
-			if playertype == "video" and int(playerid) > 0:
-				if _ConfigDefault['config.watchmodus']=="livetv":
-					title = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "audio")).strip()
-				else:
-					tt = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "audio")).strip()
-					if tt != title or title == "":
-						title = tt
-						draw_audiotime._drawSetting['title_start'] = 0
-						helper.printout("[info]    ", _ConfigDefault['mesg.green'])
-						print "Video: " + title
-
-				### get status times
-				speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
-				### convert media_timetotal to seconds
-				seconds_timetotal = helper.get_sec(media_timetotal)
-
-				if seconds_timetotal > 0:
-					if _ConfigDefault['config.screenmodus']=="time":
-						draw_videotime.drawProperties(title, time_now, speed, media_time, media_timetotal)
-			### audio player active
-			elif playertype == "audio" and int(playerid) >= 0:
-				if _ConfigDefault['config.watchmodus']=="livetv":
-					title = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "audio")).strip()
-				else:
-					tt = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "audio")).strip()
-					if tt != title or title == "":
-						title = tt
-						draw_audiotime._drawSetting['title_start'] = 0
-						helper.printout("[info]    ", _ConfigDefault['mesg.green'])
-						print "Audio: " + title
-
-				### get status times
-				speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
-				### convert media_timetotal to seconds
-				seconds_timetotal = helper.get_sec(media_timetotal)
-
-				if seconds_timetotal > 0:
-					if _ConfigDefault['config.screenmodus']=="time":
-						draw_audiotime.drawProperties(title, time_now, speed, media_time, media_timetotal)
-			### something else
-			else:
-				# API has nothing, clear all values
-				title = ""
-				draw_default.drawLogoStartScreen(time_now)
-				draw_videotime._drawSetting['title_start'] = 0
-				draw_audiotime._drawSetting['title_start'] = 0
+			clock.tick(30)
+			try:
+				for event in pygame.event.get():
+					if event.type == pygame.MOUSEBUTTONDOWN:
+						mousepress=pygame.mouse.get_pressed()
+						if mousepress[0]:
+							if draw_audiotime._drawSetting['play_pause'].collidepoint(pygame.mouse.get_pos()): # left mouse button
+								print "click at play/pause button: ", pygame.mouse.get_pos()
+					if event.type == pygame.KEYDOWN:
+						print "key"
+					if event.type == pygame.QUIT: ### closed window
+						running = False
+					if event.type == update_screen:
+						draw_screen(screen)
+			except KeyboardInterrupt:
+				pygame.quit()
 
 			pygame.display.flip()
-			time.sleep(1)
-			pygame.display.update()
+			time.sleep(0.1)
+			#pygame.time.wait(500)
+			###pygame.display.update() # ? necessary ?
+
 		### window closed, normal exit
 		helper.printout("[end]     ", _ConfigDefault['mesg.magenta'])
 		print "bye ..."
@@ -246,6 +266,7 @@ def main():
 		main_exit()
 	except KeyboardInterrupt:
 		main_exit()
+
 ### main program
 if __name__ == "__main__":
 	draw_default = DrawToDisplay_Default(helper, _ConfigDefault)

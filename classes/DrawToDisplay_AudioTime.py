@@ -1,5 +1,6 @@
 from datetime import timedelta
 import re
+from pygame import Rect
 
 class DrawToDisplay_AudioTime:
 
@@ -24,6 +25,7 @@ class DrawToDisplay_AudioTime:
 	_drawSetting['audioinfo.time.margin_top'] = 54
 
 	_drawSetting['title_start'] = 0
+	_drawSetting['play_pause'] = Rect(0, 0, 0, 0)
 
 	def __init__(self, helper, _ConfigDefault):
 		self.helper = helper
@@ -173,7 +175,7 @@ class DrawToDisplay_AudioTime:
 		### draw time
 		self.draw_default.displaytext(str(time_now.strftime("%H:%M")), self._drawSetting['audioinfo.time_now.fontsize'], 10, self._drawSetting['audioinfo.time_now.height_margin'], 'left', (self._ConfigDefault['color.white']))
 		### calculate progress bar
-		margin_progessbar = self._drawSetting['audioinfo.progressbar.margin_top']+self._drawSetting['audioinfo.progressbar.height']+margin_top
+		margin_progressbar = self._drawSetting['audioinfo.progressbar.margin_top']+self._drawSetting['audioinfo.progressbar.height']+margin_top
 
 		### pad media_time and media_timetotal with zeros
 		mtime = self.helper.add_zeros(media_time)
@@ -186,15 +188,20 @@ class DrawToDisplay_AudioTime:
 		x5 = self.draw_default.get_text_w('/',self._drawSetting['audioinfo.time.fontsize']) / 2
 		xx = ((x4 - x3) / 2) + x3 - x5
 		### time played
-		self.draw_default.displaytext(mtime, self._drawSetting['audioinfo.time.fontsize'], x1, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))
+		self.draw_default.displaytext(mtime, self._drawSetting['audioinfo.time.fontsize'], x1, margin_progressbar+self._drawSetting['audioinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))
 		### / separator
-		self.draw_default.displaytext("/", self._drawSetting['audioinfo.time.fontsize'], xx, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))
+		self.draw_default.displaytext("/", self._drawSetting['audioinfo.time.fontsize'], xx, margin_progressbar+self._drawSetting['audioinfo.time.margin_top'], 'left', (self._ConfigDefault['color.white']))
 		### total time
-		self.draw_default.displaytext(mtime_total, self._drawSetting['audioinfo.time.fontsize'], x2, margin_progessbar+self._drawSetting['audioinfo.time.margin_top'], 'right', (self._ConfigDefault['color.white']))
+		self.draw_default.displaytext(mtime_total, self._drawSetting['audioinfo.time.fontsize'], x2, margin_progressbar+self._drawSetting['audioinfo.time.margin_top'], 'right', (self._ConfigDefault['color.white']))
 		### draw progress bar
 		self.drawProgressBar(seconds_timetotal, seconds_time, margin_top)
 		### draw play/pause button
 		if speed == 1: ### play
-			self.screen.blit(self._drawSetting['audioinfo.button.play'], (8, margin_progessbar+8))
+			self.screen.blit(self._drawSetting['audioinfo.button.play'], (8, margin_progressbar+8))
 		else: ### pause
-			self.screen.blit(self._drawSetting['audioinfo.button.break'], (8, margin_progessbar+8))
+			self.screen.blit(self._drawSetting['audioinfo.button.break'], (8, margin_progressbar+8))
+
+		### put rectangular areas over clickable buttons
+		r = self._drawSetting['audioinfo.button.play'].get_rect().inflate(-4, -4)
+		self._drawSetting['play_pause'] = Rect((8, margin_progressbar+8), (r[2], r[3]))
+

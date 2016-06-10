@@ -240,13 +240,24 @@ def main():
 			try:
 				for event in pygame.event.get():
 					if event.type == pygame.MOUSEBUTTONDOWN:
-						mousepress=pygame.mouse.get_pressed()
+						mousepress = pygame.mouse.get_pressed()
+						mousepos = pygame.mouse.get_pos()
 						if mousepress[0]:
-							if draw_audiotime._drawSetting['play_pause'].collidepoint(pygame.mouse.get_pos()): # left mouse button
-								#print "click at play/pause button: ", pygame.mouse.get_pos()
+							if draw_audiotime._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
 								playerid, playertype = KODI_WEBSERVER.KODI_GetActivePlayers()
 								if int(playerid) >=0:
 									res = KODI_WEBSERVER.KODI_Play_Pause(playerid)
+
+							if draw_audiotime._drawSetting['home'].collidepoint(mousepos): # home button
+								print "home"
+
+							if draw_audiotime._drawSetting['ff'].collidepoint(mousepos): # forward button
+								print "forward"
+							if draw_audiotime._drawSetting['rew'].collidepoint(mousepos): # back button
+								print "back"
+							if draw_audiotime._drawSetting['stop'].collidepoint(mousepos): # stop button
+								print "stop"
+
 					if event.type == pygame.KEYDOWN:
 						print "key"
 					if event.type == pygame.QUIT: ### closed window

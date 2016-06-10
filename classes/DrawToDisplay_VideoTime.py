@@ -1,5 +1,6 @@
 from datetime import timedelta
 import re
+from pygame import Rect
 
 class DrawToDisplay_VideoTime:
 
@@ -16,8 +17,6 @@ class DrawToDisplay_VideoTime:
 
 	_drawSetting['videoinfo.time_now.fontsize'] = 60
 	_drawSetting['videoinfo.time_now.height_margin'] = 68
-	_drawSetting['videoinfo.time_end.fontsize'] = 60
-	_drawSetting['videoinfo.time_end.height_margin'] = 68
 
 	_drawSetting['videoinfo.time.fontsize'] = 38
 	_drawSetting['videoinfo.time.margin_left'] = 0
@@ -39,8 +38,8 @@ class DrawToDisplay_VideoTime:
 	def SetupDrawSetting320x240(self):
 		self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_320x240.png')
 
-		self._drawSetting['videoinfo.button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/button_play_320x240.png')
-		self._drawSetting['videoinfo.button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/button_break_320x240.png')
+		self._drawSetting['videoinfo.button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/button_play_320x240.png')
+		self._drawSetting['videoinfo.button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/button_pause_320x240.png')
 	"""
 	def SetupDrawSetting480x272(self):
 		self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_480x272.png')
@@ -58,8 +57,6 @@ class DrawToDisplay_VideoTime:
 
 		self._drawSetting['videoinfo.time_now.fontsize'] = 80
 		self._drawSetting['videoinfo.time_now.height_margin'] = 86
-		self._drawSetting['videoinfo.time_end.fontsize'] = 80
-		self._drawSetting['videoinfo.time_end.height_margin'] = 86
 
 		self._drawSetting['videoinfo.time.fontsize'] = 81
 		self._drawSetting['videoinfo.time.margin_left'] = 14
@@ -81,8 +78,6 @@ class DrawToDisplay_VideoTime:
 
 		self._drawSetting['videoinfo.time_now.fontsize'] = 80
 		self._drawSetting['videoinfo.time_now.height_margin'] = 86
-		self._drawSetting['videoinfo.time_end.fontsize'] = 80
-		self._drawSetting['videoinfo.time_end.height_margin'] = 86
 
 		self._drawSetting['videoinfo.time.fontsize'] = 81
 		self._drawSetting['videoinfo.time.margin_left'] = 14
@@ -146,15 +141,6 @@ class DrawToDisplay_VideoTime:
 		### if we want single line display
 		else:
 			### scroll title if needed
-			"""
-			if len(video_title) > max_chars:
-				### make buffer based on start position in the title
-				buff = video_title[self._drawSetting['title_start']:self._drawSetting['title_start'] + max_chars]
-				if (self._drawSetting['title_start'] + max_chars) < len(video_title):
-					self._drawSetting['title_start'] += 1
-				else:
-					self._drawSetting['title_start'] = 0
-			"""
 			if len(video_title) > max_chars:
 				vt = video_title + " | "
 				if self._drawSetting['title_start'] + max_chars <= len(vt):
@@ -201,6 +187,6 @@ class DrawToDisplay_VideoTime:
 			self.screen.blit(self._drawSetting['videoinfo.button.break'], (8, margin_progressbar+8))
 
 		### put rectangular areas over clickable buttons
-		r = self._drawSetting['audioinfo.button.play'].get_rect().inflate(-4, -4)
+		r = self._drawSetting['videoinfo.button.play'].get_rect().inflate(-4, -4)
 		self._drawSetting['play_pause'] = Rect((8, margin_progressbar+8), (r[2], r[3]))
 

@@ -11,21 +11,31 @@ class DrawToDisplay_AudioTime:
 
 	_drawSetting['audioinfo.button.play'] = ""
 	_drawSetting['audioinfo.button.break'] = ""
+	_drawSetting['audioinfo.button.home'] = ""
+	_drawSetting['audioinfo.button.rew'] = ""
+	_drawSetting['audioinfo.button.ff'] = ""
+	_drawSetting['audioinfo.button.stop'] = ""
 
 	_drawSetting['audioinfo.title.fontsize'] = 40
 	_drawSetting['audioinfo.title.height_margin'] = 4
 
 	_drawSetting['audioinfo.time_now.fontsize'] = 60
 	_drawSetting['audioinfo.time_now.height_margin'] = 68
-	_drawSetting['audioinfo.time_end.fontsize'] = 60
-	_drawSetting['audioinfo.time_end.height_margin'] = 68
 
 	_drawSetting['audioinfo.time.fontsize'] = 38
 	_drawSetting['audioinfo.time.margin_left'] = 0
 	_drawSetting['audioinfo.time.margin_top'] = 54
 
+	_drawSetting['audioinfo.menu.margin_top'] = 18
+	_drawSetting['audioinfo.menu.margin_right'] = 4
+	_drawSetting['audioinfo.menu.right'] = 0
+
 	_drawSetting['title_start'] = 0
 	_drawSetting['play_pause'] = Rect(0, 0, 0, 0)
+	_drawSetting['home'] = Rect(0, 0, 0, 0)
+	_drawSetting['ff'] = Rect(0, 0, 0, 0)
+	_drawSetting['rew'] = Rect(0, 0, 0, 0)
+	_drawSetting['stop'] = Rect(0, 0, 0, 0)
 
 	def __init__(self, helper, _ConfigDefault):
 		self.helper = helper
@@ -41,8 +51,15 @@ class DrawToDisplay_AudioTime:
 	def SetupDrawSetting320x240(self):
 		self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_320x240.png')
 
-		self._drawSetting['audioinfo.button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/button_play_320x240.png')
-		self._drawSetting['audioinfo.button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/button_break_320x240.png')
+		self._drawSetting['audioinfo.button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/button_play_320x240.png')
+		self._drawSetting['audioinfo.button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/button_pause_320x240.png')
+		self._drawSetting['audioinfo.button.home'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_home_320x240.png')
+		self._drawSetting['audioinfo.button.rew'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_rew_320x240.png')
+		self._drawSetting['audioinfo.button.ff'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_ff_320x240.png')
+		self._drawSetting['audioinfo.button.stop'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_stop_320x240.png')
+
+		self._drawSetting['audioinfo.menu.right'] = self.screen.get_width() - self._drawSetting['audioinfo.menu.margin_right']
+
 	"""
 	def SetupDrawSetting480x272(self):
 		self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_480x272.png')
@@ -60,8 +77,6 @@ class DrawToDisplay_AudioTime:
 
 		self._drawSetting['audioinfo.time_now.fontsize'] = 80
 		self._drawSetting['audioinfo.time_now.height_margin'] = 86
-		self._drawSetting['audioinfo.time_end.fontsize'] = 80
-		self._drawSetting['audioinfo.time_end.height_margin'] = 86
 
 		self._drawSetting['audioinfo.time.fontsize'] = 81
 		self._drawSetting['audioinfo.time.margin_left'] = 14
@@ -83,13 +98,14 @@ class DrawToDisplay_AudioTime:
 
 		self._drawSetting['audioinfo.time_now.fontsize'] = 80
 		self._drawSetting['audioinfo.time_now.height_margin'] = 86
-		self._drawSetting['audioinfo.time_end.fontsize'] = 80
-		self._drawSetting['audioinfo.time_end.height_margin'] = 86
 
 		self._drawSetting['audioinfo.time.fontsize'] = 81
 		self._drawSetting['audioinfo.time.margin_left'] = 14
 		self._drawSetting['audioinfo.time.margin_top'] = 83
 	"""
+	#def drawMenu(self) # menu bar, top right
+
+
 	def drawProgressBar(self, play_time, play_time_done, margin_top=0):
 		rect_bar = self.pygame.Rect((10,self._drawSetting['audioinfo.progressbar.margin_top']+margin_top), (self.screen.get_width()-20,self._drawSetting['audioinfo.progressbar.height']))
 
@@ -148,15 +164,6 @@ class DrawToDisplay_AudioTime:
 		### if we want single line display
 		else:
 			### scroll title if needed
-			"""
-			if len(audio_title) > max_chars:
-				### make buffer based on start position in the title
-				buff = audio_title[self._drawSetting['title_start']:self._drawSetting['title_start'] + max_chars]
-				if self._drawSetting['title_start'] + max_chars < len(audio_title) + 3: ### add extra empty space to get nicer scroll
-					self._drawSetting['title_start'] += 1
-				else:
-					self._drawSetting['title_start'] = 0
-			"""
 			if len(audio_title) > max_chars:
 				at = audio_title + " | "
 				if self._drawSetting['title_start'] + max_chars <= len(at):
@@ -176,7 +183,6 @@ class DrawToDisplay_AudioTime:
 		self.draw_default.displaytext(str(time_now.strftime("%H:%M")), self._drawSetting['audioinfo.time_now.fontsize'], 10, self._drawSetting['audioinfo.time_now.height_margin'], 'left', (self._ConfigDefault['color.white']))
 		### calculate progress bar
 		margin_progressbar = self._drawSetting['audioinfo.progressbar.margin_top']+self._drawSetting['audioinfo.progressbar.height']+margin_top
-
 		### pad media_time and media_timetotal with zeros
 		mtime = self.helper.add_zeros(media_time)
 		mtime_total = self.helper.add_zeros(media_timetotal)
@@ -200,8 +206,21 @@ class DrawToDisplay_AudioTime:
 			self.screen.blit(self._drawSetting['audioinfo.button.play'], (8, margin_progressbar+8))
 		else: ### pause
 			self.screen.blit(self._drawSetting['audioinfo.button.break'], (8, margin_progressbar+8))
+		### draw menu buttons
+		self.screen.blit(self._drawSetting['audioinfo.button.home'], (self._drawSetting['audioinfo.menu.right'] - 32, self._drawSetting['audioinfo.menu.margin_top']))
+		self.screen.blit(self._drawSetting['audioinfo.button.ff'], (self._drawSetting['audioinfo.menu.right'] - 64, self._drawSetting['audioinfo.menu.margin_top']))
+		self.screen.blit(self._drawSetting['audioinfo.button.rew'], (self._drawSetting['audioinfo.menu.right'] - 96, self._drawSetting['audioinfo.menu.margin_top']))
+		self.screen.blit(self._drawSetting['audioinfo.button.stop'], (self._drawSetting['audioinfo.menu.right'] - 128, self._drawSetting['audioinfo.menu.margin_top']))
 
-		### put rectangular areas over clickable buttons
-		r = self._drawSetting['audioinfo.button.play'].get_rect().inflate(-4, -4)
-		self._drawSetting['play_pause'] = Rect((8, margin_progressbar+8), (r[2], r[3]))
+		### put clickable area over buttons
+		r_play_pause = self._drawSetting['audioinfo.button.play'].get_rect().inflate(-4, -4)
+		self._drawSetting['play_pause'] = Rect((8, margin_progressbar+8), (r_play_pause[2], r_play_pause[3]))
 
+		r_home = self._drawSetting['audioinfo.button.home'].get_rect().inflate(-8, -10)
+		self._drawSetting['home'] = Rect((self._drawSetting['audioinfo.menu.right'] - 32, self._drawSetting['audioinfo.menu.margin_top']), (r_home[2], r_home[3]))
+		r_ff = self._drawSetting['audioinfo.button.ff'].get_rect().inflate(-6, -12)
+		self._drawSetting['ff'] = Rect((self._drawSetting['audioinfo.menu.right'] - 64, self._drawSetting['audioinfo.menu.margin_top']), (r_ff[2], r_ff[3]))
+		r_rew = self._drawSetting['audioinfo.button.rew'].get_rect().inflate(-6, -12)
+		self._drawSetting['rew'] = Rect((self._drawSetting['audioinfo.menu.right'] - 96, self._drawSetting['audioinfo.menu.margin_top']), (r_rew[2], r_rew[3]))
+		r_stop = self._drawSetting['audioinfo.button.stop'].get_rect().inflate(-8, -12)
+		self._drawSetting['stop'] = Rect((self._drawSetting['audioinfo.menu.right'] - 128, self._drawSetting['audioinfo.menu.margin_top']), (r_stop[2], r_stop[3]))

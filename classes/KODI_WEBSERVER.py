@@ -1,6 +1,5 @@
-import urllib
 import json
-from string import split
+import urllib2
 
 class KODI_WEBSERVER:
 
@@ -14,7 +13,7 @@ class KODI_WEBSERVER:
 		self.ip_port = 'http://'
 		if self._ConfigDefault['KODI.webserver.user']!="" and self._ConfigDefault['KODI.webserver.pass']!="":
 			self.ip_port = self.ip_port+self._ConfigDefault['KODI.webserver.user']+':'+self._ConfigDefault['KODI.webserver.pass']+'@'
-		self.ip_port = self.ip_port+self._ConfigDefault['KODI.webserver.host']+':'+self._ConfigDefault['KODI.webserver.port']+'/jsonrpc?request='
+		self.ip_port = self.ip_port+self._ConfigDefault['KODI.webserver.host']+':'+self._ConfigDefault['KODI.webserver.port']+'/jsonrpc'
 
 	def __format_to_minute(self, hours,minutes):
 		if hours > 0:
@@ -26,12 +25,29 @@ class KODI_WEBSERVER:
 			minutes = minutes * 60
 		return int(minutes + seconds)
 
-	def getJSON(self, jsonconfig):
+	def getJSON(self, jsondata):
+		headers = {'content-type': 'application/json'}
+		self.draw_default.setInfoText("", self._ConfigDefault['color.white'])
+		json_data = json.dumps(json.loads(jsondata))
+		post_data = json_data.encode('utf-8')
+		request = urllib2.Request(self.ip_port + '?request=', json_data, headers)
 		try:
-			self.draw_default.setInfoText("", self._ConfigDefault['color.white'])
-			f = urllib.urlopen(self.ip_port+jsonconfig)
-			json_string = f.read()
-			return json.loads(json_string)
+			result = urllib2.urlopen(request).read()
+			result = json.loads(result.decode("utf-8"))
+			return result
+		except IOError:
+			self.draw_default.setInfoText("NO KODI ACCESS!", self._ConfigDefault['color.red'])
+			return json.loads('{"id":1,"jsonrpc":"2.0","result":[]}')
+
+	def KODI_Play_Pause(self, playerid):
+		headers = {'content-type': 'application/json'}
+		payload = '{"jsonrpc": "2.0", "method": "Player.PlayPause", "params": { "playerid":' + str(playerid) + ' }, "id": 1}'
+		json_data = json.dumps(json.loads(payload))
+		request = urllib2.Request(self.ip_port, json_data, headers)
+		try:
+			result = urllib2.urlopen(request).read()
+			result = json.loads(result.decode("utf-8"))
+			return result
 		except IOError:
 			self.draw_default.setInfoText("NO KODI ACCESS!", self._ConfigDefault['color.red'])
 			return json.loads('{"id":1,"jsonrpc":"2.0","result":[]}')

@@ -243,7 +243,10 @@ def main():
 						mousepress=pygame.mouse.get_pressed()
 						if mousepress[0]:
 							if draw_audiotime._drawSetting['play_pause'].collidepoint(pygame.mouse.get_pos()): # left mouse button
-								print "click at play/pause button: ", pygame.mouse.get_pos()
+								#print "click at play/pause button: ", pygame.mouse.get_pos()
+								playerid, playertype = KODI_WEBSERVER.KODI_GetActivePlayers()
+								if int(playerid) >=0:
+									res = KODI_WEBSERVER.KODI_Play_Pause(playerid)
 					if event.type == pygame.KEYDOWN:
 						print "key"
 					if event.type == pygame.QUIT: ### closed window

@@ -227,6 +227,8 @@ def main():
 	pygame.display.set_caption('KodiDisplayInfo')
 	pygame.mouse.set_visible(1)
 
+	res = KODI_WEBSERVER.KODI_Get_Version()
+
 	draw_default.setPygameScreen(pygame, screen)
 	draw_videotime.setPygameScreen(pygame, screen, draw_default)
 	draw_audiotime.setPygameScreen(pygame, screen, draw_default)
@@ -243,20 +245,30 @@ def main():
 						mousepress = pygame.mouse.get_pressed()
 						mousepos = pygame.mouse.get_pos()
 						if mousepress[0]:
-							if draw_audiotime._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
-								playerid, playertype = KODI_WEBSERVER.KODI_GetActivePlayers()
-								if int(playerid) >=0:
-									res = KODI_WEBSERVER.KODI_Play_Pause(playerid)
-
-							if draw_audiotime._drawSetting['home'].collidepoint(mousepos): # home button
-								print "home"
-
-							if draw_audiotime._drawSetting['ff'].collidepoint(mousepos): # forward button
-								print "forward"
-							if draw_audiotime._drawSetting['rew'].collidepoint(mousepos): # back button
-								print "back"
-							if draw_audiotime._drawSetting['stop'].collidepoint(mousepos): # stop button
-								print "stop"
+							playerid, playertype = KODI_WEBSERVER.KODI_GetActivePlayers()
+							if int(playerid) >=0:
+								if draw_audiotime._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
+									print "play/pause"
+									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.PlayPause')
+								if draw_audiotime._drawSetting['home'].collidepoint(mousepos): # home button
+									print "home"
+								if draw_audiotime._drawSetting['menu'].collidepoint(mousepos): # home button
+									print "menu"
+								if draw_audiotime._drawSetting['ff'].collidepoint(mousepos): # forward button
+									print "forward"
+									if int(res['major']) < 16:
+										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoNext')
+									#else:
+									#	res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo')
+								if draw_audiotime._drawSetting['rew'].collidepoint(mousepos): # back button
+									print "back"
+									if int(res['major']) < 16:
+										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoPrevious')
+									#else:
+									#	res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo')
+								if draw_audiotime._drawSetting['stop'].collidepoint(mousepos): # stop button
+									print "stop"
+									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.Stop')
 
 					if event.type == pygame.KEYDOWN:
 						print "key"

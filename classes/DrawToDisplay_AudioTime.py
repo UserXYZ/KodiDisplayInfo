@@ -57,6 +57,7 @@ class DrawToDisplay_AudioTime:
 		self._drawSetting['audioinfo.button.rew'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_rew_320x240.png')
 		self._drawSetting['audioinfo.button.ff'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_ff_320x240.png')
 		self._drawSetting['audioinfo.button.stop'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_stop_320x240.png')
+		self._drawSetting['audioinfo.button.menu'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_menu_320x240.png')
 
 		self._drawSetting['audioinfo.menu.right'] = self.screen.get_width() - self._drawSetting['audioinfo.menu.margin_right']
 
@@ -207,7 +208,7 @@ class DrawToDisplay_AudioTime:
 		else: ### pause
 			self.screen.blit(self._drawSetting['audioinfo.button.break'], (8, margin_progressbar+8))
 		### draw menu buttons
-		self.screen.blit(self._drawSetting['audioinfo.button.home'], (self._drawSetting['audioinfo.menu.right'] - 32, self._drawSetting['audioinfo.menu.margin_top']))
+		self.screen.blit(self._drawSetting['audioinfo.button.menu'], (self._drawSetting['audioinfo.menu.right'] - 32, self._drawSetting['audioinfo.menu.margin_top']))
 		self.screen.blit(self._drawSetting['audioinfo.button.ff'], (self._drawSetting['audioinfo.menu.right'] - 64, self._drawSetting['audioinfo.menu.margin_top']))
 		self.screen.blit(self._drawSetting['audioinfo.button.rew'], (self._drawSetting['audioinfo.menu.right'] - 96, self._drawSetting['audioinfo.menu.margin_top']))
 		self.screen.blit(self._drawSetting['audioinfo.button.stop'], (self._drawSetting['audioinfo.menu.right'] - 128, self._drawSetting['audioinfo.menu.margin_top']))
@@ -216,8 +217,8 @@ class DrawToDisplay_AudioTime:
 		r_play_pause = self._drawSetting['audioinfo.button.play'].get_rect().inflate(-4, -4)
 		self._drawSetting['play_pause'] = Rect((8, margin_progressbar+8), (r_play_pause[2], r_play_pause[3]))
 
-		r_home = self._drawSetting['audioinfo.button.home'].get_rect().inflate(-8, -10)
-		self._drawSetting['home'] = Rect((self._drawSetting['audioinfo.menu.right'] - 32, self._drawSetting['audioinfo.menu.margin_top']), (r_home[2], r_home[3]))
+		r_home = self._drawSetting['audioinfo.button.menu'].get_rect().inflate(-8, -10)
+		self._drawSetting['menu'] = Rect((self._drawSetting['audioinfo.menu.right'] - 32, self._drawSetting['audioinfo.menu.margin_top']), (r_home[2], r_home[3]))
 		r_ff = self._drawSetting['audioinfo.button.ff'].get_rect().inflate(-6, -12)
 		self._drawSetting['ff'] = Rect((self._drawSetting['audioinfo.menu.right'] - 64, self._drawSetting['audioinfo.menu.margin_top']), (r_ff[2], r_ff[3]))
 		r_rew = self._drawSetting['audioinfo.button.rew'].get_rect().inflate(-6, -12)

@@ -62,3 +62,4 @@ class Helper(object):
 			self.printout("[error]   ", self._ConfigDefault['mesg.red'])
 			print "Color Error RGB! " + str(text)
 			exit()
+

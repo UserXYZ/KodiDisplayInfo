@@ -15,11 +15,6 @@ class KODI_WEBSERVER:
 			self.ip_port = self.ip_port+self._ConfigDefault['KODI.webserver.user']+':'+self._ConfigDefault['KODI.webserver.pass']+'@'
 		self.ip_port = self.ip_port+self._ConfigDefault['KODI.webserver.host']+':'+self._ConfigDefault['KODI.webserver.port']+'/jsonrpc'
 
-	def __format_to_minute(self, hours,minutes):
-		if hours > 0:
-			hours = hours * 60
-		return int(hours + minutes)
-
 	def __format_to_seconds(self, minutes, seconds):
 		if minutes > 0:
 			minutes = minutes * 60
@@ -30,7 +25,7 @@ class KODI_WEBSERVER:
 		self.draw_default.setInfoText("", self._ConfigDefault['color.white'])
 		json_data = json.dumps(json.loads(jsondata))
 		post_data = json_data.encode('utf-8')
-		request = urllib2.Request(self.ip_port + '?request=', json_data, headers)
+		request = urllib2.Request(self.ip_port + '?request=', post_data, headers)
 		try:
 			result = urllib2.urlopen(request).read()
 			result = json.loads(result.decode("utf-8"))
@@ -39,11 +34,13 @@ class KODI_WEBSERVER:
 			self.draw_default.setInfoText("NO KODI ACCESS!", self._ConfigDefault['color.red'])
 			return json.loads('{"id":1,"jsonrpc":"2.0","result":[]}')
 
-	def KODI_Play_Pause(self, playerid):
+	def KODI_Cmd(self, playerid, cmd):
 		headers = {'content-type': 'application/json'}
-		payload = '{"jsonrpc": "2.0", "method": "Player.PlayPause", "params": { "playerid":' + str(playerid) + ' }, "id": 1}'
+		payload = '{"jsonrpc": "2.0", "method": "' + str(cmd) + '", "params": { "playerid": ' + str(playerid) + ' }, "id": 1}'
+		#print "cmd: " + payload
 		json_data = json.dumps(json.loads(payload))
-		request = urllib2.Request(self.ip_port, json_data, headers)
+		post_data = json_data.encode('utf-8')
+		request = urllib2.Request(self.ip_port, post_data, headers)
 		try:
 			result = urllib2.urlopen(request).read()
 			result = json.loads(result.decode("utf-8"))
@@ -88,7 +85,6 @@ class KODI_WEBSERVER:
 			title = parsed_json['result']['item']['title']
 			if title == "":
 				title = parsed_json['result']['item']['label']
-
 			return title
 		except KeyError:
 			return ""
@@ -113,3 +109,18 @@ class KODI_WEBSERVER:
 			self.helper.printout("[warning]    ", self._ConfigDefault['mesg.red'])
 			print 'Decoding JSON has failed'
 			return 0,0,0
+
+	def KODI_Get_Version(self):
+		# retrieve current installed version
+		try:
+			parsed_json = self.getJSON('{ "jsonrpc": "2.0", "method": "Application.GetProperties", "params": {"properties": ["version", "name"]}, "id": 1 }')
+			version_installed = []
+			if parsed_json.has_key('result') and parsed_json['result'].has_key('version'):
+				version_installed  = parsed_json['result']['version']
+			return version_installed
+		except KeyError:
+			return ""
+		except IndexError:
+			return ""
+
+

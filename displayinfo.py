@@ -227,7 +227,7 @@ def main():
 	pygame.display.set_caption('KodiDisplayInfo')
 	pygame.mouse.set_visible(1)
 
-	res = KODI_WEBSERVER.KODI_Get_Version()
+	ver = int(KODI_WEBSERVER.KODI_Get_Version()['major'])
 
 	draw_default.setPygameScreen(pygame, screen)
 	draw_videotime.setPygameScreen(pygame, screen, draw_default)
@@ -249,26 +249,29 @@ def main():
 							if int(playerid) >=0:
 								if draw_audiotime._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
 									print "play/pause"
-									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.PlayPause')
+									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.PlayPause','')
 								if draw_audiotime._drawSetting['home'].collidepoint(mousepos): # home button
 									print "home"
 								if draw_audiotime._drawSetting['menu'].collidepoint(mousepos): # home button
 									print "menu"
 								if draw_audiotime._drawSetting['ff'].collidepoint(mousepos): # forward button
 									print "forward"
-									if int(res['major']) < 16:
-										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoNext')
-									#else:
-									#	res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo')
+									#print int(res['major'])
+									if ver < 16:
+										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoNext','')
+									else:
+										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "next"')
+									print res
 								if draw_audiotime._drawSetting['rew'].collidepoint(mousepos): # back button
 									print "back"
-									if int(res['major']) < 16:
-										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoPrevious')
-									#else:
-									#	res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo')
+									if ver < 16:
+										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoPrevious','')
+									else:
+										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "previous"')
+									print res
 								if draw_audiotime._drawSetting['stop'].collidepoint(mousepos): # stop button
 									print "stop"
-									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.Stop')
+									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.Stop','')
 
 					if event.type == pygame.KEYDOWN:
 						print "key"

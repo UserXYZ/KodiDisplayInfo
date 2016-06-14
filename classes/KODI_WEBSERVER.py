@@ -34,10 +34,13 @@ class KODI_WEBSERVER:
 			self.draw_default.setInfoText("NO KODI ACCESS!", self._ConfigDefault['color.red'])
 			return json.loads('{"id":1,"jsonrpc":"2.0","result":[]}')
 
-	def KODI_Cmd(self, playerid, cmd):
+	def KODI_Cmd(self, playerid, cmd, params):
 		headers = {'content-type': 'application/json'}
-		payload = '{"jsonrpc": "2.0", "method": "' + str(cmd) + '", "params": { "playerid": ' + str(playerid) + ' }, "id": 1}'
-		#print "cmd: " + payload
+		if params == "":
+			payload = '{"jsonrpc": "2.0", "method": "' + str(cmd) + '", "params": { "playerid": ' + str(playerid) + ' }, "id": 1}'
+		else:
+			payload = '{"jsonrpc": "2.0", "method": "' + str(cmd) + '", "params": { "playerid": ' + str(playerid) +', ' + str(params) + '}, "id": 1}'
+		print "cmd: " + payload
 		json_data = json.dumps(json.loads(payload))
 		post_data = json_data.encode('utf-8')
 		request = urllib2.Request(self.ip_port, post_data, headers)

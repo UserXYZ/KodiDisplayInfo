@@ -1,4 +1,5 @@
 from datetime import timedelta
+from pygame import Rect
 
 class DrawToDisplay_Default:
 
@@ -7,6 +8,12 @@ class DrawToDisplay_Default:
 	_drawSetting['startscreen.logo'] = ""
 	_drawSetting['startscreen.clock.fontsize'] = 60
 	_drawSetting['startscreen.clock.height_margin'] = 80
+
+	_drawSetting['startscreen.button.menu'] = ""
+	_drawSetting['startscreen.menu.margin_top'] = 6
+	_drawSetting['startscreen.menu.margin_right'] = 4
+	_drawSetting['startscreen.menu.right'] = 0
+	_drawSetting['menu'] = Rect(0, 0, 0, 0)
 
 	default_info_text = ""
 	default_info_color = ""
@@ -33,6 +40,10 @@ class DrawToDisplay_Default:
 
 	def SetupDrawSetting320x240(self):
 		self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_320x240.png')
+		self._drawSetting['startscreen.button.menu'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_menu_320x240.png')
+		self._drawSetting['startscreen.menu.right'] = self.screen.get_width() - self._drawSetting['startscreen.menu.margin_right']
+		r_menu = self._drawSetting['startscreen.button.menu'].get_rect().inflate(-8, -10)
+		self._drawSetting['menu'] = Rect((self._drawSetting['startscreen.menu.right'] - 32, self._drawSetting['startscreen.menu.margin_top']), (r_menu[2], r_menu[3]))
 
 	def SetupDrawSetting480x272(self):
 		self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_480x272.png')
@@ -49,7 +60,7 @@ class DrawToDisplay_Default:
 		self.default_info_color = color
 
 	def infoTextKODI(self, text, color):
-		self.displaytext(text, 32, (self.screen.get_width()/2), 20, 'none', color)
+		self.displaytext(text, 32, (self.screen.get_width()/2)-48, 20, 'none', color)
 
 	def displaytext(self, text, size, x, y, floating, color):
 		font = self.pygame.font.Font(self._ConfigDefault['basedirpath']+"fonts/MC360.ttf", size)
@@ -80,7 +91,7 @@ class DrawToDisplay_Default:
 		x = (self.screen.get_width()/2) - (self._drawSetting['startscreen.logo'].get_rect().width/2)
 		y = (self.screen.get_height()/2) - (self._drawSetting['startscreen.logo'].get_rect().height/2)
 		self.screen.blit(self._drawSetting['startscreen.logo'],(x,y-10))
-
+		self.screen.blit(self._drawSetting['startscreen.button.menu'], (self._drawSetting['startscreen.menu.right'] - 32, self._drawSetting['startscreen.menu.margin_top']))
 		self.displaytext(time_now.strftime("%H:%M:%S"), self._drawSetting['startscreen.clock.fontsize'], (self.screen.get_width()/2), (self.screen.get_height()/2)+self._drawSetting['startscreen.clock.height_margin'], 'none', (self._ConfigDefault['color.white']))
 
 		### return self._drawSetting['startscreen.logo'].get_rect(left=x, top=y-10)

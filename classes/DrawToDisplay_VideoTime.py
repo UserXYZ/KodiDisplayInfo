@@ -11,6 +11,11 @@ class DrawToDisplay_VideoTime:
 
 	_drawSetting['videoinfo.button.play'] = ""
 	_drawSetting['videoinfo.button.break'] = ""
+	_drawSetting['videoinfo.button.home'] = ""
+	_drawSetting['videoinfo.button.rew'] = ""
+	_drawSetting['videoinfo.button.ff'] = ""
+	_drawSetting['videoinfo.button.stop'] = ""
+	_drawSetting['videoinfo.button.menu'] = ""
 
 	_drawSetting['videoinfo.title.fontsize'] = 40
 	_drawSetting['videoinfo.title.height_margin'] = 4
@@ -22,12 +27,23 @@ class DrawToDisplay_VideoTime:
 	_drawSetting['videoinfo.time.margin_left'] = 0
 	_drawSetting['videoinfo.time.margin_top'] = 54
 
+	_drawSetting['videoinfo.menu.margin_top'] = 18
+	_drawSetting['videoinfo.menu.margin_right'] = 4
+	_drawSetting['videoinfo.menu.right'] = 0
+
 	_drawSetting['title_start'] = 0
+	_drawSetting['play_pause'] = Rect(0, 0, 0, 0)
+	_drawSetting['home'] = Rect(0, 0, 0, 0)
+	_drawSetting['ff'] = Rect(0, 0, 0, 0)
+	_drawSetting['rew'] = Rect(0, 0, 0, 0)
+	_drawSetting['stop'] = Rect(0, 0, 0, 0)
+	_drawSetting['menu'] = Rect(0, 0, 0, 0)
 
 	def __init__(self, helper, _ConfigDefault):
 		self.helper = helper
 		self._ConfigDefault = _ConfigDefault
 		self._drawSetting['title_start'] = 0
+
 
 	def setPygameScreen(self, pygame, screen, draw_default):
 		self.pygame = pygame
@@ -36,15 +52,23 @@ class DrawToDisplay_VideoTime:
 		getattr(self, 'SetupDrawSetting'+self._ConfigDefault['display.resolution'])()
 
 	def SetupDrawSetting320x240(self):
-		self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_320x240.png')
+		#self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_320x240.png')
 
 		self._drawSetting['videoinfo.button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/button_play_320x240.png')
 		self._drawSetting['videoinfo.button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/button_pause_320x240.png')
+		self._drawSetting['videoinfo.button.home'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_home_320x240.png')
+		self._drawSetting['videoinfo.button.rew'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_rew_320x240.png')
+		self._drawSetting['videoinfo.button.ff'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_ff_320x240.png')
+		self._drawSetting['videoinfo.button.stop'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_stop_320x240.png')
+		self._drawSetting['videoinfo.button.menu'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_menu_320x240.png')
+
+		self._drawSetting['videoinfo.menu.right'] = self.screen.get_width() - self._drawSetting['videoinfo.menu.margin_right']
+
 	"""
 	def SetupDrawSetting480x272(self):
-		self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_480x272.png')
-		self._drawSetting['startscreen.clock.fontsize'] = 64
-		self._drawSetting['startscreen.clock.height_margin'] = 102
+		#self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_480x272.png')
+		#self._drawSetting['startscreen.clock.fontsize'] = 64
+		#self._drawSetting['startscreen.clock.height_margin'] = 102
 
 		self._drawSetting['videoinfo.progressbar.margin_top'] = 92
 		self._drawSetting['videoinfo.progressbar.height'] = 34
@@ -63,9 +87,9 @@ class DrawToDisplay_VideoTime:
 		self._drawSetting['videoinfo.time.margin_top'] = 83
 
 	def SetupDrawSetting480x320(self):
-		self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_480x320.png')
-		self._drawSetting['startscreen.clock.fontsize'] = 75
-		self._drawSetting['startscreen.clock.height_margin'] = 118
+		#self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_480x320.png')
+		#self._drawSetting['startscreen.clock.fontsize'] = 75
+		#self._drawSetting['startscreen.clock.height_margin'] = 118
 
 		self._drawSetting['videoinfo.progressbar.margin_top'] = 120
 		self._drawSetting['videoinfo.progressbar.height'] = 34
@@ -185,8 +209,19 @@ class DrawToDisplay_VideoTime:
 			self.screen.blit(self._drawSetting['videoinfo.button.play'], (8, margin_progressbar+8))
 		else: ### pause
 			self.screen.blit(self._drawSetting['videoinfo.button.break'], (8, margin_progressbar+8))
-
+		### draw menu buttons
+		self.screen.blit(self._drawSetting['videoinfo.button.menu'], (self._drawSetting['videoinfo.menu.right'] - 32, self._drawSetting['videoinfo.menu.margin_top']))
+		self.screen.blit(self._drawSetting['videoinfo.button.ff'], (self._drawSetting['videoinfo.menu.right'] - 64, self._drawSetting['videoinfo.menu.margin_top']))
+		self.screen.blit(self._drawSetting['videoinfo.button.rew'], (self._drawSetting['videoinfo.menu.right'] - 96, self._drawSetting['videoinfo.menu.margin_top']))
+		self.screen.blit(self._drawSetting['videoinfo.button.stop'], (self._drawSetting['videoinfo.menu.right'] - 128, self._drawSetting['videoinfo.menu.margin_top']))
 		### put rectangular areas over clickable buttons
 		r = self._drawSetting['videoinfo.button.play'].get_rect().inflate(-4, -4)
 		self._drawSetting['play_pause'] = Rect((8, margin_progressbar+8), (r[2], r[3]))
-
+		r_menu = self._drawSetting['videoinfo.button.menu'].get_rect().inflate(-8, -10)
+		self._drawSetting['menu'] = Rect((self._drawSetting['videoinfo.menu.right'] - 32, self._drawSetting['videoinfo.menu.margin_top']), (r_menu[2], r_menu[3]))
+		r_ff = self._drawSetting['videoinfo.button.ff'].get_rect().inflate(-6, -12)
+		self._drawSetting['ff'] = Rect((self._drawSetting['videoinfo.menu.right'] - 64, self._drawSetting['videoinfo.menu.margin_top']), (r_ff[2], r_ff[3]))
+		r_rew = self._drawSetting['videoinfo.button.rew'].get_rect().inflate(-6, -12)
+		self._drawSetting['rew'] = Rect((self._drawSetting['videoinfo.menu.right'] - 96, self._drawSetting['videoinfo.menu.margin_top']), (r_rew[2], r_rew[3]))
+		r_stop = self._drawSetting['videoinfo.button.stop'].get_rect().inflate(-8, -12)
+		self._drawSetting['stop'] = Rect((self._drawSetting['videoinfo.menu.right'] - 128, self._drawSetting['videoinfo.menu.margin_top']), (r_stop[2], r_stop[3]))

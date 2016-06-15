@@ -70,7 +70,9 @@ _ConfigDefault = {
 	"color.white":              WHITE,
 	"color.red":                RED,
 	"color.orange":             ORANGE,
-	"color.green":              GREEN
+	"color.green":              GREEN,
+
+	"active_screen":            "default"
 	}
 
 helper = Helper(_ConfigDefault)
@@ -82,7 +84,7 @@ configParser = ConfigParser.RawConfigParser()
 configFilePath = r''+basedirpath+'config.txt'
 configParser.read(configFilePath)
 title = "" # has to be global so that draw_screen can use it only once
-def_scr = "" # default screen exists
+active_screen = "default"
 
 # check config
 if configParser.has_option('CONFIG', 'SCREENMODUS'):
@@ -154,6 +156,7 @@ def remove_control_chars(s):
 
 def draw_screen(screen):
 	global title
+	global active_screen
 
 	time_now = datetime.datetime.now()
 	###start draw, clear screen first
@@ -163,6 +166,7 @@ def draw_screen(screen):
 
 	### video player active
 	if playertype == "video" and int(playerid) > 0:
+		active_screen = "video.player"
 		if _ConfigDefault['config.watchmodus']=="livetv":
 			title = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "video")).strip()
 		else:
@@ -183,6 +187,7 @@ def draw_screen(screen):
 				draw_videotime.drawProperties(title, time_now, speed, media_time, media_timetotal)
 	### audio player active
 	elif playertype == "audio" and int(playerid) >= 0:
+		active_screen = "audio.player"
 		if _ConfigDefault['config.watchmodus']=="livetv":
 			title = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "audio")).strip()
 		else:
@@ -205,7 +210,9 @@ def draw_screen(screen):
 	else:
 		# API has nothing, clear all values
 		title = ""
+		active_screen = "default"
 		draw_audiotime._drawSetting['play_pause'] = Rect(0, 0, 0, 0) # null button
+		draw_videotime._drawSetting['play_pause'] = Rect(0, 0, 0, 0) # null button
 		draw_default.drawLogoStartScreen(time_now)
 		draw_videotime._drawSetting['title_start'] = 0
 		draw_audiotime._drawSetting['title_start'] = 0
@@ -215,9 +222,10 @@ def main_exit():
 	sys.exit()
 
 def main():
-	UPDATE_SCREEN = 500
+	global active_screen
+	UPDATE_SCREEN = 500 # 500ms for screen update
 	clock = pygame.time.Clock()
-	update_screen = pygame.USEREVENT + 1
+	update_screen = pygame.USEREVENT + 1 # define our event for timer
 
 	helper.printout("[info]    ", _ConfigDefault['mesg.cyan'])
 	print "Start: KodiDisplayInfo"
@@ -226,7 +234,7 @@ def main():
 	screen = pygame.display.set_mode(getattr(draw_default, 'Screen'+_ConfigDefault['display.resolution'])(), 0, 32)
 	pygame.display.set_caption('KodiDisplayInfo')
 	pygame.mouse.set_visible(1)
-
+	### get kodi version, some API calls differ, we need to handle that
 	ver = int(KODI_WEBSERVER.KODI_Get_Version()['major'])
 
 	draw_default.setPygameScreen(pygame, screen)
@@ -237,55 +245,82 @@ def main():
 	# run the game loop
 	running = True
 	try:
+		clock.tick(30) # max 30FPS
 		while running:
-			clock.tick(30)
+			#print _ConfigDefault['active_screen']
 			try:
 				for event in pygame.event.get():
 					if event.type == pygame.MOUSEBUTTONDOWN:
 						mousepress = pygame.mouse.get_pressed()
 						mousepos = pygame.mouse.get_pos()
-						if mousepress[0]:
-							playerid, playertype = KODI_WEBSERVER.KODI_GetActivePlayers()
-							if int(playerid) >=0:
-								if draw_audiotime._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
-									print "play/pause"
-									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.PlayPause','')
-								if draw_audiotime._drawSetting['home'].collidepoint(mousepos): # home button
-									print "home"
-								if draw_audiotime._drawSetting['menu'].collidepoint(mousepos): # home button
-									print "menu"
-								if draw_audiotime._drawSetting['ff'].collidepoint(mousepos): # forward button
-									print "forward"
-									#print int(res['major'])
-									if ver < 16:
-										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoNext','')
-									else:
-										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "next"')
-									print res
-								if draw_audiotime._drawSetting['rew'].collidepoint(mousepos): # back button
-									print "back"
-									if ver < 16:
-										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoPrevious','')
-									else:
-										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "previous"')
-									print res
-								if draw_audiotime._drawSetting['stop'].collidepoint(mousepos): # stop button
-									print "stop"
-									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.Stop','')
+						if mousepress[0]: # left mouse button
+							if active_screen == "audio.player" or active_screen == "video.player":
+								playerid, playertype = KODI_WEBSERVER.KODI_GetActivePlayers()
+								### video player active
+								if playertype == "video" and int(playerid) > 0:
+									if draw_videotime._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
+										print "play/pause"
+										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.PlayPause','')
+									if draw_videotime._drawSetting['home'].collidepoint(mousepos): # home button
+										print "home"
+									if draw_videotime._drawSetting['menu'].collidepoint(mousepos): # menu button
+										print "video menu"
+									if draw_videotime._drawSetting['ff'].collidepoint(mousepos): # forward button
+										print "forward"
+										if ver < 16:
+											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoNext','')
+										else:
+											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "next"')
+									if draw_videotime._drawSetting['rew'].collidepoint(mousepos): # back button
+										print "back"
+										if ver < 16:
+											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoPrevious','')
+										else:
+											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "previous"')
+									if draw_videotime._drawSetting['stop'].collidepoint(mousepos): # stop button
+										print "stop"
+										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.Stop','')
+								### audio player active
+								elif playertype == "audio" and int(playerid) >= 0:
+									if draw_audiotime._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
+										print "play/pause"
+										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.PlayPause','')
+									if draw_audiotime._drawSetting['home'].collidepoint(mousepos): # home button
+										print "home"
+									if draw_audiotime._drawSetting['menu'].collidepoint(mousepos): # menu button
+										print "audio menu"
+									if draw_audiotime._drawSetting['ff'].collidepoint(mousepos): # forward button
+										print "forward"
+										if ver < 16:
+											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoNext','')
+										else:
+											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "next"')
+									if draw_audiotime._drawSetting['rew'].collidepoint(mousepos): # back button
+										print "back"
+										if ver < 16:
+											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoPrevious','')
+										else:
+											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "previous"')
+									if draw_audiotime._drawSetting['stop'].collidepoint(mousepos): # stop button
+										print "stop"
+										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.Stop','')
+							elif active_screen == "default": # default screen active
+								if draw_default._drawSetting['menu'].collidepoint(mousepos): # menu button
+									print "default menu"
+							else: # some other screen active
+								print "other screen active"
 
 					if event.type == pygame.KEYDOWN:
 						print "key"
-					if event.type == pygame.QUIT: ### closed window
+					if event.type == pygame.QUIT: # closed window
 						running = False
-					if event.type == update_screen:
+					if event.type == update_screen: # time to update screen
 						draw_screen(screen)
 			except KeyboardInterrupt:
 				pygame.quit()
 
 			pygame.display.flip()
-			time.sleep(0.1)
-			#pygame.time.wait(500)
-			###pygame.display.update() # ? necessary ?
+			#time.sleep(0.1)
 
 		### window closed, normal exit
 		helper.printout("[end]     ", _ConfigDefault['mesg.magenta'])

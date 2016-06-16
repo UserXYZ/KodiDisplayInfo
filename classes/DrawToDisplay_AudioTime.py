@@ -53,13 +53,13 @@ class DrawToDisplay_AudioTime:
 	def SetupDrawSetting320x240(self):
 		#self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_320x240.png')
 
-		self._drawSetting['audioinfo.button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/button_play_320x240.png')
-		self._drawSetting['audioinfo.button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/button_pause_320x240.png')
-		self._drawSetting['audioinfo.button.home'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_home_320x240.png')
-		self._drawSetting['audioinfo.button.rew'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_rew_320x240.png')
-		self._drawSetting['audioinfo.button.ff'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_ff_320x240.png')
-		self._drawSetting['audioinfo.button.stop'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_stop_320x240.png')
-		self._drawSetting['audioinfo.button.menu'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_menu_320x240.png')
+		self._drawSetting['audioinfo.button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/hicontrast/button_play_320x240.png')
+		self._drawSetting['audioinfo.button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/hicontrast/button_pause_320x240.png')
+		self._drawSetting['audioinfo.button.home'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_home_320x240.png')
+		self._drawSetting['audioinfo.button.rew'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_rew_320x240.png')
+		self._drawSetting['audioinfo.button.ff'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_ff_320x240.png')
+		self._drawSetting['audioinfo.button.stop'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_stop_320x240.png')
+		self._drawSetting['audioinfo.button.menu'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_menu_320x240.png')
 
 		self._drawSetting['audioinfo.menu.right'] = self.screen.get_width() - self._drawSetting['audioinfo.menu.margin_right']
 

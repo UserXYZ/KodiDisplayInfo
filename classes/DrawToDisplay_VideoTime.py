@@ -54,13 +54,13 @@ class DrawToDisplay_VideoTime:
 	def SetupDrawSetting320x240(self):
 		#self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_320x240.png')
 
-		self._drawSetting['videoinfo.button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/button_play_320x240.png')
-		self._drawSetting['videoinfo.button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/button_pause_320x240.png')
-		self._drawSetting['videoinfo.button.home'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_home_320x240.png')
-		self._drawSetting['videoinfo.button.rew'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_rew_320x240.png')
-		self._drawSetting['videoinfo.button.ff'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_ff_320x240.png')
-		self._drawSetting['videoinfo.button.stop'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_stop_320x240.png')
-		self._drawSetting['videoinfo.button.menu'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_menu_320x240.png')
+		self._drawSetting['videoinfo.button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/hicontrast/button_play_320x240.png')
+		self._drawSetting['videoinfo.button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/hicontrast/button_pause_320x240.png')
+		self._drawSetting['videoinfo.button.home'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_home_320x240.png')
+		self._drawSetting['videoinfo.button.rew'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_rew_320x240.png')
+		self._drawSetting['videoinfo.button.ff'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_ff_320x240.png')
+		self._drawSetting['videoinfo.button.stop'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_stop_320x240.png')
+		self._drawSetting['videoinfo.button.menu'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_menu_320x240.png')
 
 		self._drawSetting['videoinfo.menu.right'] = self.screen.get_width() - self._drawSetting['videoinfo.menu.margin_right']
 

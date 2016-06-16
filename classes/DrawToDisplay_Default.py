@@ -40,7 +40,7 @@ class DrawToDisplay_Default:
 
 	def SetupDrawSetting320x240(self):
 		self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_320x240.png')
-		self._drawSetting['startscreen.button.menu'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/button_menu_320x240.png')
+		self._drawSetting['startscreen.button.menu'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_menu_320x240.png')
 		self._drawSetting['startscreen.menu.right'] = self.screen.get_width() - self._drawSetting['startscreen.menu.margin_right']
 		r_menu = self._drawSetting['startscreen.button.menu'].get_rect().inflate(-8, -10)
 		self._drawSetting['menu'] = Rect((self._drawSetting['startscreen.menu.right'] - 32, self._drawSetting['startscreen.menu.margin_top']), (r_menu[2], r_menu[3]))

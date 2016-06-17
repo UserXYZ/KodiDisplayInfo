@@ -152,7 +152,8 @@ if configParser.get('DISPLAY', 'FBDEV') != "":
 	os.environ["SDL_FBDEV"] = configParser.get('DISPLAY', 'FBDEV')
 
 def remove_control_chars(s):
-	return "".join(ch for ch in s if unicodedata.category(ch)[0]!="C")
+	if s != "":
+		return "".join(ch for ch in s if unicodedata.category(ch)[0]!="C")
 
 def draw_screen(screen):
 	global title
@@ -168,9 +169,9 @@ def draw_screen(screen):
 	if playertype == "video" and int(playerid) > 0:
 		active_screen = "video.player"
 		if _ConfigDefault['config.watchmodus']=="livetv":
-			title = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "video")).strip()
+			title = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "video")[0])
 		else:
-			tt = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "video")).strip()
+			tt = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "video")[0])
 			if tt != title or title == "":
 				title = tt
 				draw_videotime._drawSetting['title_start'] = 0
@@ -188,25 +189,33 @@ def draw_screen(screen):
 	### audio player active
 	elif playertype == "audio" and int(playerid) >= 0:
 		active_screen = "audio.player"
-		if _ConfigDefault['config.watchmodus']=="livetv":
-			title = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "audio")).strip()
-		else:
-			tt = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "audio")).strip()
-			if tt != title or title == "":
-				title = tt
-				draw_audiotime._drawSetting['title_start'] = 0
-				helper.printout("[info]    ", _ConfigDefault['mesg.green'])
-				print "Audio: " + title
+		try:
+			if _ConfigDefault['config.watchmodus']=="livetv":
+				title = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "audio")[0])
+			else:
+				tt, album, artist =  KODI_WEBSERVER.KODI_GetItem(playerid, "audio")
+				tt = remove_control_chars(tt)
+				album = remove_control_chars(album)
+				if len(artist) > 0:
+					artist = remove_control_chars(artist[0])
+					tt = artist + " - " + tt
+				if tt != title or title == "":
+					title = tt
+					draw_audiotime._drawSetting['title_start'] = 0
+					helper.printout("[info]    ", _ConfigDefault['mesg.green'])
+					print "Audio: " + title
+			### get status times
+			speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
+			### convert media_timetotal to seconds
+			seconds_timetotal = helper.get_sec(media_timetotal)
 
-		### get status times
-		speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
-		### convert media_timetotal to seconds
-		seconds_timetotal = helper.get_sec(media_timetotal)
-
-		if seconds_timetotal > 0:
-			if _ConfigDefault['config.screenmodus']=="time":
-				draw_audiotime.drawProperties(title, time_now, speed, media_time, media_timetotal)
-	### something else
+			if seconds_timetotal > 0:
+				if _ConfigDefault['config.screenmodus']=="time":
+					draw_audiotime.drawProperties(title, time_now, speed, media_time, media_timetotal)
+		except ValueError:
+			helper.printout("[info]    ", _ConfigDefault['mesg.green'])
+			print "main No more items in playlist"
+	### something else is on the screen
 	else:
 		# API has nothing, clear all values
 		title = ""
@@ -256,54 +265,59 @@ def main():
 						if mousepress[0]: # left mouse button
 							if active_screen == "audio.player" or active_screen == "video.player":
 								playerid, playertype = KODI_WEBSERVER.KODI_GetActivePlayers()
+								if int(playerid) >= 0:
+									playlistid, position, size = KODI_WEBSERVER.KODI_Get_PL_Properties(playerid)
+									print "at item "+str(position)+" from "+str(size)
 								### video player active
-								if playertype == "video" and int(playerid) > 0:
-									if draw_videotime._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
-										print "play/pause"
-										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.PlayPause','')
-									if draw_videotime._drawSetting['home'].collidepoint(mousepos): # home button
-										print "home"
-									if draw_videotime._drawSetting['menu'].collidepoint(mousepos): # menu button
-										print "video menu"
-									if draw_videotime._drawSetting['ff'].collidepoint(mousepos): # forward button
-										print "forward"
+								if draw_videotime._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
+									print "play/pause"
+									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.PlayPause','')
+								if draw_videotime._drawSetting['home'].collidepoint(mousepos): # home button
+									print "home"
+								if draw_videotime._drawSetting['menu'].collidepoint(mousepos): # menu button
+									print "video menu"
+								if draw_videotime._drawSetting['ff'].collidepoint(mousepos): # forward button
+									print "forward"
+									if int(position) < int(size)-1: # still has more items to go
 										if ver < 16:
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoNext','')
 										else:
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "next"')
-									if draw_videotime._drawSetting['rew'].collidepoint(mousepos): # back button
-										print "back"
+								if draw_videotime._drawSetting['rew'].collidepoint(mousepos): # back button
+									print "back 1"
+									if position > 0: # not at the beginning of playlist
 										if ver < 16:
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoPrevious','')
 										else:
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "previous"')
-									if draw_videotime._drawSetting['stop'].collidepoint(mousepos): # stop button
-										print "stop"
-										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.Stop','')
+								if draw_videotime._drawSetting['stop'].collidepoint(mousepos): # stop button
+									print "stop"
+									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.Stop','')
 								### audio player active
-								elif playertype == "audio" and int(playerid) >= 0:
-									if draw_audiotime._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
-										print "play/pause"
-										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.PlayPause','')
-									if draw_audiotime._drawSetting['home'].collidepoint(mousepos): # home button
-										print "home"
-									if draw_audiotime._drawSetting['menu'].collidepoint(mousepos): # menu button
-										print "audio menu"
-									if draw_audiotime._drawSetting['ff'].collidepoint(mousepos): # forward button
-										print "forward"
+								if draw_audiotime._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
+									print "play/pause"
+									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.PlayPause','')
+								if draw_audiotime._drawSetting['home'].collidepoint(mousepos): # home button
+									print "home"
+								if draw_audiotime._drawSetting['menu'].collidepoint(mousepos): # menu button
+									print "audio menu"
+								if draw_audiotime._drawSetting['ff'].collidepoint(mousepos): # forward button
+									print "forward"
+									if int(position) < int(size)-1: # still has more items to go
 										if ver < 16:
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoNext','')
 										else:
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "next"')
-									if draw_audiotime._drawSetting['rew'].collidepoint(mousepos): # back button
-										print "back"
+								if draw_audiotime._drawSetting['rew'].collidepoint(mousepos): # back button
+									print "back"
+									if position > 0: # not at the beginning of playlist
 										if ver < 16:
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoPrevious','')
 										else:
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "previous"')
-									if draw_audiotime._drawSetting['stop'].collidepoint(mousepos): # stop button
-										print "stop"
-										res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.Stop','')
+								if draw_audiotime._drawSetting['stop'].collidepoint(mousepos): # stop button
+									print "stop"
+									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.Stop','')
 							elif active_screen == "default": # default screen active
 								if draw_default._drawSetting['menu'].collidepoint(mousepos): # menu button
 									print "default menu"

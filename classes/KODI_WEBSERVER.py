@@ -48,8 +48,8 @@ class KODI_WEBSERVER:
 			result = urllib2.urlopen(request).read()
 			result = json.loads(result.decode("utf-8"))
 			return result
-		except IOError:
-			self.draw_default.setInfoText("NO KODI ACCESS!", self._ConfigDefault['color.red'])
+		except ValueError:
+			self.draw_default.setInfoText("No response!", self._ConfigDefault['color.red'])
 			return json.loads('{"id":1,"jsonrpc":"2.0","result":[]}')
 
 	def KODI_GetActivePlayers(self):
@@ -76,7 +76,7 @@ class KODI_WEBSERVER:
 				return ""
 		elif mtype == "audio":
 			try:
-				parsed_json = self.getJSON('{"jsonrpc": "2.0", "method": "Player.GetItem", "params": { "properties": ["title"], "playerid": '+str(playerid)+' }, "id": "AudioGetItem"}')
+				parsed_json = self.getJSON('{"jsonrpc": "2.0", "method": "Player.GetItem", "params": { "properties": ["title", "album", "artist"], "playerid": '+str(playerid)+' }, "id": "AudioGetItem"}')
 			except ValueError:
 				self.helper.printout("[warning]    ", self._ConfigDefault['mesg.red'])
 				print 'Decoding JSON has failed'
@@ -88,7 +88,12 @@ class KODI_WEBSERVER:
 			title = parsed_json['result']['item']['title']
 			if title == "":
 				title = parsed_json['result']['item']['label']
-			return title
+			if mtype == "audio":
+				album = parsed_json['result']['item']['album']
+				artist = parsed_json['result']['item']['artist']
+				return (title, album, artist)
+			elif mtype == "video":
+					return (title, '', '')
 		except KeyError:
 			return ""
 		except IndexError:
@@ -102,6 +107,34 @@ class KODI_WEBSERVER:
 				media_time = str(parsed_json['result']['time']['hours'])+":"+str(parsed_json['result']['time']['minutes'])+":"+str(parsed_json['result']['time']['seconds'])
 				media_timetotal = str(parsed_json['result']['totaltime']['hours'])+":"+str(parsed_json['result']['totaltime']['minutes'])+":"+str(parsed_json['result']['totaltime']['seconds'])
 				return speed, media_time, media_timetotal
+			except KeyError, e:
+				print "KeyError: " + str(e)
+				return 0,0,0
+			except IndexError, e:
+				print "IndexError: " + str(e)
+				return 0,0,0
+		except ValueError:
+			self.helper.printout("[warning]    ", self._ConfigDefault['mesg.red'])
+			print 'Decoding JSON has failed'
+			return 0,0,0
+
+	def KODI_Get_PL_Properties(self, playerid): # playlist properties
+		try:
+			parsed_json = self.getJSON('{"jsonrpc": "2.0", "method": "Player.GetProperties", "params": { "playerid": '+str(playerid)+', "properties": ["playlistid","position"] }, "id": 1}')
+			try:
+				playlistid = parsed_json['result']['playlistid']
+				position = parsed_json['result']['position']
+			except KeyError, e:
+				print "KeyError: " + str(e)
+				return 0,0,0
+			except IndexError, e:
+				print "IndexError: " + str(e)
+				return 0,0,0
+
+			parsed_json = self.getJSON('{"jsonrpc": "2.0", "method": "Playlist.GetProperties", "params": { "playlistid": '+str(playlistid)+', "properties": ["size"] }, "id": 1}')
+			try:
+				size = parsed_json['result']['size']
+				return playlistid, position, size
 			except KeyError, e:
 				print "KeyError: " + str(e)
 				return 0,0,0

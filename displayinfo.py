@@ -216,15 +216,29 @@ def draw_screen(screen):
 			helper.printout("[info]    ", _ConfigDefault['mesg.green'])
 			print "main No more items in playlist"
 	### something else is on the screen
+	elif active_screen == "play_no_back":
+		if playertype == "audio":
+			pass
+		pass
+	elif active_screen == "play_no_fwd":
+		pass
+	elif active_screen == "default_menu":
+		title = ""
+		draw_audiotime._drawSetting['play_pause'] = Rect(0, 0, 0, 0) # null button
+		draw_videotime._drawSetting['play_pause'] = Rect(0, 0, 0, 0) # null button
+		draw_videotime._drawSetting['title_start'] = 0
+		draw_audiotime._drawSetting['title_start'] = 0
+		draw_default.drawLogoStartScreen(time_now)
+		draw_default.drawPopUp("Menu Selected")
 	else:
 		# API has nothing, clear all values
 		title = ""
 		active_screen = "default"
 		draw_audiotime._drawSetting['play_pause'] = Rect(0, 0, 0, 0) # null button
 		draw_videotime._drawSetting['play_pause'] = Rect(0, 0, 0, 0) # null button
-		draw_default.drawLogoStartScreen(time_now)
 		draw_videotime._drawSetting['title_start'] = 0
 		draw_audiotime._drawSetting['title_start'] = 0
+		draw_default.drawLogoStartScreen(time_now)
 
 def main_exit():
 	pygame.quit()
@@ -232,6 +246,8 @@ def main_exit():
 
 def main():
 	global active_screen
+
+	time_now = 0
 	UPDATE_SCREEN = 500 # 500ms for screen update
 	clock = pygame.time.Clock()
 	update_screen = pygame.USEREVENT + 1 # define our event for timer
@@ -240,7 +256,7 @@ def main():
 	print "Start: KodiDisplayInfo"
 
 	pygame.init()
-	screen = pygame.display.set_mode(getattr(draw_default, 'Screen'+_ConfigDefault['display.resolution'])(), 0, 32)
+	screen = pygame.display.set_mode(getattr(draw_default, 'Screen'+_ConfigDefault['display.resolution'])())
 	pygame.display.set_caption('KodiDisplayInfo')
 	pygame.mouse.set_visible(1)
 	### get kodi version, some API calls differ, we need to handle that
@@ -267,7 +283,7 @@ def main():
 								playerid, playertype = KODI_WEBSERVER.KODI_GetActivePlayers()
 								if int(playerid) >= 0:
 									playlistid, position, size = KODI_WEBSERVER.KODI_Get_PL_Properties(playerid)
-									print "at item "+str(position)+" from "+str(size)
+									#print "at item "+str(position)+" from "+str(size)
 								### video player active
 								if draw_videotime._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
 									print "play/pause"
@@ -283,6 +299,8 @@ def main():
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoNext','')
 										else:
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "next"')
+									else:
+										active_screen = "play_no_fwd"
 								if draw_videotime._drawSetting['rew'].collidepoint(mousepos): # back button
 									print "back 1"
 									if position > 0: # not at the beginning of playlist
@@ -290,6 +308,8 @@ def main():
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoPrevious','')
 										else:
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "previous"')
+									else:
+										active_screen = "play_no_back"
 								if draw_videotime._drawSetting['stop'].collidepoint(mousepos): # stop button
 									print "stop"
 									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.Stop','')
@@ -308,6 +328,8 @@ def main():
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoNext','')
 										else:
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "next"')
+									else:
+										active_screen = "play_no_fwd"
 								if draw_audiotime._drawSetting['rew'].collidepoint(mousepos): # back button
 									print "back"
 									if position > 0: # not at the beginning of playlist
@@ -315,12 +337,17 @@ def main():
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoPrevious','')
 										else:
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "previous"')
+									else:
+										active_screen = "play_no_back"
 								if draw_audiotime._drawSetting['stop'].collidepoint(mousepos): # stop button
 									print "stop"
 									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.Stop','')
 							elif active_screen == "default": # default screen active
 								if draw_default._drawSetting['menu'].collidepoint(mousepos): # menu button
 									print "default menu"
+									active_screen = "default_menu"
+							elif active_screen == "default_menu": # default screen active, menu shown
+								active_screen = "default"
 							else: # some other screen active
 								print "other screen active"
 
@@ -333,8 +360,8 @@ def main():
 			except KeyboardInterrupt:
 				pygame.quit()
 
+			### redraw screen
 			pygame.display.flip()
-			#time.sleep(0.1)
 
 		### window closed, normal exit
 		helper.printout("[end]     ", _ConfigDefault['mesg.magenta'])

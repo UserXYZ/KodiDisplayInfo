@@ -40,7 +40,7 @@ class KODI_WEBSERVER:
 			payload = '{"jsonrpc": "2.0", "method": "' + str(cmd) + '", "params": { "playerid": ' + str(playerid) + ' }, "id": 1}'
 		else:
 			payload = '{"jsonrpc": "2.0", "method": "' + str(cmd) + '", "params": { "playerid": ' + str(playerid) +', ' + str(params) + '}, "id": 1}'
-		print "cmd: " + payload
+		#print "cmd: " + payload
 		json_data = json.dumps(json.loads(payload))
 		post_data = json_data.encode('utf-8')
 		request = urllib2.Request(self.ip_port, post_data, headers)

@@ -42,6 +42,7 @@ class DrawToDisplay_Default:
 		self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_320x240.png')
 		self._drawSetting['startscreen.button.menu'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_menu_320x240.png')
 		self._drawSetting['startscreen.menu.right'] = self.screen.get_width() - self._drawSetting['startscreen.menu.margin_right']
+		### set clickable area over menu icon
 		r_menu = self._drawSetting['startscreen.button.menu'].get_rect().inflate(-8, -10)
 		self._drawSetting['menu'] = Rect((self._drawSetting['startscreen.menu.right'] - 32, self._drawSetting['startscreen.menu.margin_top']), (r_menu[2], r_menu[3]))
 
@@ -64,7 +65,7 @@ class DrawToDisplay_Default:
 
 	def displaytext(self, text, size, x, y, floating, color):
 		font = self.pygame.font.Font(self._ConfigDefault['basedirpath']+"fonts/MC360.ttf", size)
-		text = font.render(text, 1, color)
+		text = font.render(text, True, color)
 		if floating == 'right':
 			x = x - text.get_rect().width
 			y = y - text.get_rect().height
@@ -95,3 +96,17 @@ class DrawToDisplay_Default:
 		self.displaytext(time_now.strftime("%H:%M:%S"), self._drawSetting['startscreen.clock.fontsize'], (self.screen.get_width()/2), (self.screen.get_height()/2)+self._drawSetting['startscreen.clock.height_margin'], 'none', (self._ConfigDefault['color.white']))
 
 		### return self._drawSetting['startscreen.logo'].get_rect(left=x, top=y-10)
+
+	def drawPopUp(self, text):
+		popcolor = [0, 97, 181]
+		textcolor = [255,198, 0]
+
+		font = self.pygame.font.Font(self._ConfigDefault['basedirpath']+"fonts/MC360.ttf", 32)
+		text_size = font.size(text)
+		text_surface = font.render(text, True, textcolor)
+
+		pop = self.pygame.Surface((text_size[0]+20, 50))
+		pop.fill(popcolor)
+		pop.blit(text_surface, (pop.get_width()/2 - text_size[0]/2, pop.get_height()/2 - text_size[1]/2))
+		self.screen.blit(pop, (self.screen.get_width()/2 - pop.get_width()/2, self.screen.get_height()/2 - pop.get_height()/2))
+

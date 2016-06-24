@@ -4,6 +4,9 @@ This is my enhanced version of KodiDisplayInfo, with separate audio and video cl
 
 It is primarily developed for 320x240 pixels display on Odroid C1, therefore changes are not verified on other displays.
 
+This version tries to reorganize everything into more logical layout with functions for appropriate stuff.
+Also, it is a try at reorganizing events handling etc...
+
 ### Original description follows:
 
 KodiDisplayInfo is a little Python/Pygame tool for small LCD TFT displays, which can be placed on the Raspberry Pi or similar single-board computer.

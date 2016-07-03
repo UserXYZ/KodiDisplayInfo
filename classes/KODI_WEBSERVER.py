@@ -150,13 +150,13 @@ class KODI_WEBSERVER:
 		# retrieve current installed version
 		try:
 			parsed_json = self.getJSON('{ "jsonrpc": "2.0", "method": "Application.GetProperties", "params": {"properties": ["version", "name"]}, "id": 1 }')
-			version_installed = []
 			if parsed_json.has_key('result') and parsed_json['result'].has_key('version'):
-				version_installed  = parsed_json['result']['version']
-			return version_installed
+				return parsed_json['result']['version']
 		except KeyError:
 			return ""
 		except IndexError:
+			return ""
+		except AttributeError:
 			return ""
 
 

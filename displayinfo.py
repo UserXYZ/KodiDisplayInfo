@@ -18,6 +18,7 @@
 # v3.4    modify display, add title folding in two line mode on space and underscore
 # v3.5    Add text scrolling for one line and text breaking for two line title display
 # v3.6    Rewrite text scrolling to go circular; fix printing for unicode titles, hopefully
+# v4.0    Change to only one display class
 
 import os
 import sys
@@ -30,8 +31,7 @@ import string
 from pygame.locals import *
 from classes.Helper import Helper
 from classes.DrawToDisplay_Default import DrawToDisplay_Default
-from classes.DrawToDisplay_VideoTime import DrawToDisplay_VideoTime
-from classes.DrawToDisplay_AudioTime import DrawToDisplay_AudioTime
+from classes.DrawToDisplay import DrawToDisplay
 from classes.KODI_WEBSERVER import KODI_WEBSERVER
 
 basedirpath = os.path.dirname(os.path.realpath(__file__)) + os.sep
@@ -173,7 +173,7 @@ def draw_screen(screen):
 			tt = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "video")[0])
 			if tt != title or title == "":
 				title = tt
-				draw_videotime._drawSetting['title_start'] = 0
+				draw_time._drawSetting['title_start'] = 0
 				helper.printout("[info]    ", _ConfigDefault['mesg.green'])
 				print "Video: " + title
 
@@ -184,7 +184,7 @@ def draw_screen(screen):
 
 		if seconds_timetotal > 0:
 			if _ConfigDefault['config.screenmodus']=="time":
-				draw_videotime.drawProperties(title, time_now, speed, media_time, media_timetotal)
+				draw_time.drawProperties(title, time_now, speed, media_time, media_timetotal)
 		active_screen = "video.player"
 	### audio player active
 	elif playertype == "audio" and int(playerid) >= 0:
@@ -199,7 +199,7 @@ def draw_screen(screen):
 				tt = artist + " - " + tt
 			if tt != title or title == "":
 				title = tt
-				draw_audiotime._drawSetting['title_start'] = 0
+				draw_time._drawSetting['title_start'] = 0
 				helper.printout("[info]    ", _ConfigDefault['mesg.green'])
 				print "Audio: " + title
 		### get status times
@@ -209,7 +209,7 @@ def draw_screen(screen):
 
 		if seconds_timetotal > 0:
 			if _ConfigDefault['config.screenmodus']=="time":
-				draw_audiotime.drawProperties(title, time_now, speed, media_time, media_timetotal)
+				draw_time.drawProperties(title, time_now, speed, media_time, media_timetotal)
 		active_screen = "audio.player"
 
 	### something else is on the screen
@@ -232,10 +232,10 @@ def draw_default_screen():
 		title = ""
 		time_now = datetime.datetime.now()
 		active_screen = "default"
-		draw_audiotime._drawSetting['play_pause'] = Rect(0, 0, 0, 0) # null button
-		draw_videotime._drawSetting['play_pause'] = Rect(0, 0, 0, 0) # null button
-		draw_videotime._drawSetting['title_start'] = 0
-		draw_audiotime._drawSetting['title_start'] = 0
+		draw_time._drawSetting['play_pause'] = Rect(0, 0, 0, 0) # null button
+		draw_time._drawSetting['play_pause'] = Rect(0, 0, 0, 0) # null button
+		draw_time._drawSetting['title_start'] = 0
+		draw_time._drawSetting['title_start'] = 0
 		draw_default.drawLogoStartScreen(time_now)
 
 def main_exit():
@@ -258,11 +258,11 @@ def main():
 	pygame.display.set_caption('KodiDisplayInfo')
 	pygame.mouse.set_visible(1)
 	### get kodi version, some API calls differ, we need to handle that
-	ver = int(KODI_WEBSERVER.KODI_Get_Version()['major'])
+	if KODI_WEBSERVER.KODI_Get_Version():
+		ver = int(KODI_WEBSERVER.KODI_Get_Version()['major'])
 
 	draw_default.setPygameScreen(pygame, screen)
-	draw_videotime.setPygameScreen(pygame, screen, draw_default)
-	draw_audiotime.setPygameScreen(pygame, screen, draw_default)
+	draw_time.setPygameScreen(pygame, screen, draw_default)
 	### start timer for screen update
 	pygame.time.set_timer(update_screen, UPDATE_SCREEN)
 	# run the game loop
@@ -283,14 +283,14 @@ def main():
 									playlistid, position, size = KODI_WEBSERVER.KODI_Get_PL_Properties(playerid)
 									#print "at item "+str(position)+" from "+str(size)
 								### video player active
-								if draw_videotime._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
+								if draw_time._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
 									print "play/pause"
 									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.PlayPause','')
-								if draw_videotime._drawSetting['home'].collidepoint(mousepos): # home button
+								if draw_time._drawSetting['home'].collidepoint(mousepos): # home button
 									print "home"
-								if draw_videotime._drawSetting['menu'].collidepoint(mousepos): # menu button
+								if draw_time._drawSetting['menu'].collidepoint(mousepos): # menu button
 									print "video menu"
-								if draw_videotime._drawSetting['ff'].collidepoint(mousepos): # forward button
+								if draw_time._drawSetting['ff'].collidepoint(mousepos): # forward button
 									print "forward"
 									if int(position) < int(size)-1: # still has more items to go
 										if ver < 16:
@@ -299,7 +299,7 @@ def main():
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "next"')
 									else:
 										active_screen = "play_no_fwd"
-								if draw_videotime._drawSetting['rew'].collidepoint(mousepos): # back button
+								if draw_time._drawSetting['rew'].collidepoint(mousepos): # back button
 									print "back 1"
 									if position > 0: # not at the beginning of playlist
 										if ver < 16:
@@ -308,18 +308,18 @@ def main():
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "previous"')
 									else:
 										active_screen = "play_no_back"
-								if draw_videotime._drawSetting['stop'].collidepoint(mousepos): # stop button
+								if draw_time._drawSetting['stop'].collidepoint(mousepos): # stop button
 									print "stop"
 									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.Stop','')
 								### audio player active
-								if draw_audiotime._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
+								if draw_time._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
 									print "play/pause"
 									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.PlayPause','')
-								if draw_audiotime._drawSetting['home'].collidepoint(mousepos): # home button
+								if draw_time._drawSetting['home'].collidepoint(mousepos): # home button
 									print "home"
-								if draw_audiotime._drawSetting['menu'].collidepoint(mousepos): # menu button
+								if draw_time._drawSetting['menu'].collidepoint(mousepos): # menu button
 									print "audio menu"
-								if draw_audiotime._drawSetting['ff'].collidepoint(mousepos): # forward button
+								if draw_time._drawSetting['ff'].collidepoint(mousepos): # forward button
 									print "forward"
 									if int(position) < int(size)-1: # still has more items to go
 										if ver < 16:
@@ -328,7 +328,7 @@ def main():
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "next"')
 									else:
 										active_screen = "play_no_fwd"
-								if draw_audiotime._drawSetting['rew'].collidepoint(mousepos): # back button
+								if draw_time._drawSetting['rew'].collidepoint(mousepos): # back button
 									print "back"
 									if position > 0: # not at the beginning of playlist
 										if ver < 16:
@@ -337,7 +337,7 @@ def main():
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "previous"')
 									else:
 										active_screen = "play_no_back"
-								if draw_audiotime._drawSetting['stop'].collidepoint(mousepos): # stop button
+								if draw_time._drawSetting['stop'].collidepoint(mousepos): # stop button
 									print "stop"
 									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.Stop','')
 							elif active_screen == "default": # default screen active
@@ -375,8 +375,7 @@ if __name__ == "__main__":
 	draw_default = DrawToDisplay_Default(helper, _ConfigDefault)
 
 	if _ConfigDefault['config.screenmodus']=="time":
-		draw_videotime = DrawToDisplay_VideoTime(helper, _ConfigDefault)
-		draw_audiotime = DrawToDisplay_AudioTime(helper, _ConfigDefault)
+		draw_time = DrawToDisplay(helper, _ConfigDefault)
 
 	KODI_WEBSERVER = KODI_WEBSERVER(helper, _ConfigDefault, draw_default)
 	main()

@@ -233,8 +233,6 @@ def draw_default_screen():
 		time_now = datetime.datetime.now()
 		active_screen = "default"
 		draw_time._drawSetting['play_pause'] = Rect(0, 0, 0, 0) # null button
-		draw_time._drawSetting['play_pause'] = Rect(0, 0, 0, 0) # null button
-		draw_time._drawSetting['title_start'] = 0
 		draw_time._drawSetting['title_start'] = 0
 		draw_default.drawLogoStartScreen(time_now)
 
@@ -301,35 +299,6 @@ def main():
 										active_screen = "play_no_fwd"
 								if draw_time._drawSetting['rew'].collidepoint(mousepos): # back button
 									print "back 1"
-									if position > 0: # not at the beginning of playlist
-										if ver < 16:
-											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoPrevious','')
-										else:
-											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "previous"')
-									else:
-										active_screen = "play_no_back"
-								if draw_time._drawSetting['stop'].collidepoint(mousepos): # stop button
-									print "stop"
-									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.Stop','')
-								### audio player active
-								if draw_time._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
-									print "play/pause"
-									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.PlayPause','')
-								if draw_time._drawSetting['home'].collidepoint(mousepos): # home button
-									print "home"
-								if draw_time._drawSetting['menu'].collidepoint(mousepos): # menu button
-									print "audio menu"
-								if draw_time._drawSetting['ff'].collidepoint(mousepos): # forward button
-									print "forward"
-									if int(position) < int(size)-1: # still has more items to go
-										if ver < 16:
-											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoNext','')
-										else:
-											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "next"')
-									else:
-										active_screen = "play_no_fwd"
-								if draw_time._drawSetting['rew'].collidepoint(mousepos): # back button
-									print "back"
 									if position > 0: # not at the beginning of playlist
 										if ver < 16:
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoPrevious','')

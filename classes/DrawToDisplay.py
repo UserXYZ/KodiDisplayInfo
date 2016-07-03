@@ -77,41 +77,41 @@ class DrawToDisplay:
 		self.pygame.draw.rect(self.screen, self._ConfigDefault['color.orange'], rect_done)
 		self.pygame.draw.rect(self.screen, self._ConfigDefault['color.white'], rect_bar, 1)
 
-	def drawProperties(self, audio_title, time_now, speed, media_time, media_timetotal):
+	def drawProperties(self, title, time_now, speed, media_time, media_timetotal):
 		margin_top = 0
-		audioinfo_title_fontsize = self._drawSetting['title.fontsize']
+		title_fontsize = self._drawSetting['title.fontsize']
 		### convert media_time and media_timetotal to seconds
 		seconds_time = self.helper.get_sec(media_time)
 		seconds_timetotal = self.helper.get_sec(media_timetotal)
 		### configure for resolutions
 
 		if self._ConfigDefault['display.resolution']=="320x240":
-			audioinfo_title_fontsize = 40
+			title_fontsize = 40
 			margin_top = -16
 			second_title_height_margin = -38
 			max_chars = 14
 		### if we want two line display
 		if self._ConfigDefault['config.musictitleformat']=="twoline":
 			### if title is longer than max_chars, break into two lines
-			if len(audio_title) > max_chars:
+			if len(title) > max_chars:
 				### break title
-				line1 = audio_title[0:max_chars].strip()
-				line2 = audio_title[max_chars:].strip()
+				line1 = title[0:max_chars].strip()
+				line2 = title[max_chars:].strip()
 				brk=0
 				for i in re.finditer(r'\s|_',line1):
 					brk=i.end()
 				if brk > 0 and (max_chars - brk) < 2:
-					line1 = audio_title[0:brk].strip()
-					line2 = audio_title[brk:].strip()
-				self.draw_default.displaytext(line1, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
-				self.draw_default.displaytext(line2, audioinfo_title_fontsize, 10, self.screen.get_height()-self._drawSetting['title.height_margin'], 'left', (self._ConfigDefault['color.white']))
+					line1 = title[0:brk].strip()
+					line2 = title[brk:].strip()
+				self.draw_default.displaytext(line1, title_fontsize, 10, self.screen.get_height()-self._drawSetting['title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
+				self.draw_default.displaytext(line2, title_fontsize, 10, self.screen.get_height()-self._drawSetting['title.height_margin'], 'left', (self._ConfigDefault['color.white']))
 			else:
-				self.draw_default.displaytext(audio_title, self._drawSetting['title.fontsize'], 10, self.screen.get_height()-self._drawSetting['title.height_margin'], 'left', (self._ConfigDefault['color.white']))
+				self.draw_default.displaytext(title, self._drawSetting['title.fontsize'], 10, self.screen.get_height()-self._drawSetting['title.height_margin'], 'left', (self._ConfigDefault['color.white']))
 		### if we want single line display
 		else:
 			### scroll title if needed
-			if len(audio_title) > max_chars:
-				at = audio_title + " | "
+			if len(title) > max_chars:
+				at = title + " | "
 				if self._drawSetting['title_start'] + max_chars <= len(at):
 					buff = at[self._drawSetting['title_start']:self._drawSetting['title_start'] + max_chars]
 				else:
@@ -124,7 +124,7 @@ class DrawToDisplay:
 
 				self.draw_default.displaytext(buff, self._drawSetting['title.fontsize'], 10, self.screen.get_height()-self._drawSetting['title.height_margin'], 'left', (self._ConfigDefault['color.white']))
 			else: ### title is shorter than max_chars, show normally
-				self.draw_default.displaytext(audio_title, self._drawSetting['title.fontsize'], 10, self.screen.get_height()-self._drawSetting['title.height_margin'], 'left', (self._ConfigDefault['color.white']))
+				self.draw_default.displaytext(title, self._drawSetting['title.fontsize'], 10, self.screen.get_height()-self._drawSetting['title.height_margin'], 'left', (self._ConfigDefault['color.white']))
 		### draw time
 		self.draw_default.displaytext(str(time_now.strftime("%H:%M")), self._drawSetting['time_now.fontsize'], 10, self._drawSetting['time_now.height_margin'], 'left', (self._ConfigDefault['color.white']))
 		### calculate progress bar

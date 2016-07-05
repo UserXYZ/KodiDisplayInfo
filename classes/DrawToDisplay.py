@@ -1,6 +1,7 @@
 from datetime import timedelta
 import re
 from pygame import Rect
+import os
 
 class DrawToDisplay:
 
@@ -62,15 +63,34 @@ class DrawToDisplay:
 
 	#def drawMenu(self) # menu bar, top right
 
+	def break_text(self, text, max_chars):
+		if max_chars == 0:
+			max_chars = 14
+		line1 = text[0:max_chars].strip()
+		line2 = text[max_chars:].strip()
+		brk=0
+		for i in re.finditer(r'\s|_', line1):
+			brk=i.end()
+		if brk > 0 and (max_chars - brk) < 2:
+			line1 = text[0:brk].strip()
+			line2 = text[brk:].strip()
+
+		return line1, line2
+
 	def drawPopUp(self, text):
 		popcolor = [0, 97, 181]
 		textcolor = [255,198, 0]
 
 		font = self.pygame.font.Font(self._ConfigDefault['basedirpath']+"fonts/MC360.ttf", 32)
 		text_size = font.size(text)
+		#print text_size[0], text_size[1]
+		if text_size[0] > (self.screen.get_width() - 20):
+			line1, line2 = self.break_text(text, 0)
+			text = line1 + os.linesep + line2
+			#print text
 		text_surface = font.render(text, True, textcolor)
 
-		pop = self.pygame.Surface((text_size[0]+20, 50))
+		pop = self.pygame.Surface((text_size[0]+20, text_size[1]+10))
 		pop.fill(popcolor)
 		pop.blit(text_surface, (pop.get_width()/2 - text_size[0]/2, pop.get_height()/2 - text_size[1]/2))
 		self.screen.blit(pop, (self.screen.get_width()/2 - pop.get_width()/2, self.screen.get_height()/2 - pop.get_height()/2))
@@ -107,14 +127,17 @@ class DrawToDisplay:
 			### if title is longer than max_chars, break into two lines
 			if len(title) > max_chars:
 				### break title
+				line1, line2 = self.break_text(title, max_chars)
+				"""
 				line1 = title[0:max_chars].strip()
 				line2 = title[max_chars:].strip()
 				brk=0
-				for i in re.finditer(r'\s|_',line1):
+				for i in re.finditer(r'\s|_', line1):
 					brk=i.end()
 				if brk > 0 and (max_chars - brk) < 2:
 					line1 = title[0:brk].strip()
 					line2 = title[brk:].strip()
+				"""
 				self.draw_default.displaytext(line1, title_fontsize, 10, self.screen.get_height()-self._drawSetting['title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
 				self.draw_default.displaytext(line2, title_fontsize, 10, self.screen.get_height()-self._drawSetting['title.height_margin'], 'left', (self._ConfigDefault['color.white']))
 			else:

@@ -155,7 +155,7 @@ def remove_control_chars(s):
 	if s != "":
 		return "".join(ch for ch in s if unicodedata.category(ch)[0]!="C")
 
-def draw_screen(screen):
+def draw_vp(screen):
 	global title
 	global active_screen
 
@@ -186,41 +186,77 @@ def draw_screen(screen):
 			if _ConfigDefault['config.screenmodus']=="time":
 				draw_time.drawProperties(title, time_now, speed, media_time, media_timetotal)
 		active_screen = "video.player"
+
+def draw_ap(screen):
+	global title
+	global active_screen
+
+	time_now = datetime.datetime.now()
+	###start draw, clear screen first
+	screen.fill(_ConfigDefault['color.black'])
+	### get type of player
+	playerid, playertype = KODI_WEBSERVER.KODI_GetActivePlayers()
+
+	if _ConfigDefault['config.watchmodus']=="livetv":
+		title = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "audio")[0])
+	else:
+		tt, album, artist =  KODI_WEBSERVER.KODI_GetItem(playerid, "audio")
+		tt = remove_control_chars(tt)
+		album = remove_control_chars(album)
+		if len(artist) > 0:
+			artist = remove_control_chars(artist[0])
+			tt = artist + " - " + tt
+		if tt != title or title == "":
+			title = tt
+			draw_time._drawSetting['title_start'] = 0
+			helper.printout("[info]    ", _ConfigDefault['mesg.green'])
+			print "Audio: " + title
+	### get status times
+	speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
+	### convert media_timetotal to seconds
+	seconds_timetotal = helper.get_sec(media_timetotal)
+
+	if seconds_timetotal > 0:
+		if _ConfigDefault['config.screenmodus']=="time":
+			draw_time.drawProperties(title, time_now, speed, media_time, media_timetotal)
+	active_screen = "audio.player"
+
+def draw_screen(screen):
+	global title
+	global active_screen
+
+	time_now = datetime.datetime.now()
+	###start draw, clear screen first
+	screen.fill(_ConfigDefault['color.black'])
+	### get type of player
+	playerid, playertype = KODI_WEBSERVER.KODI_GetActivePlayers()
+
+	#print "as=",active_screen
+
+	### video player active
+	if playertype == "video" and int(playerid) > 0 and (active_screen == "video.player" or active_screen == "default"):
+		draw_vp(screen)
 	### audio player active
-	elif playertype == "audio" and int(playerid) >= 0:
-		if _ConfigDefault['config.watchmodus']=="livetv":
-			title = remove_control_chars(KODI_WEBSERVER.KODI_GetItem(playerid, "audio")[0])
-		else:
-			tt, album, artist =  KODI_WEBSERVER.KODI_GetItem(playerid, "audio")
-			tt = remove_control_chars(tt)
-			album = remove_control_chars(album)
-			if len(artist) > 0:
-				artist = remove_control_chars(artist[0])
-				tt = artist + " - " + tt
-			if tt != title or title == "":
-				title = tt
-				draw_time._drawSetting['title_start'] = 0
-				helper.printout("[info]    ", _ConfigDefault['mesg.green'])
-				print "Audio: " + title
-		### get status times
-		speed, media_time, media_timetotal = KODI_WEBSERVER.KODI_GetProperties(playerid)
-		### convert media_timetotal to seconds
-		seconds_timetotal = helper.get_sec(media_timetotal)
-
-		if seconds_timetotal > 0:
-			if _ConfigDefault['config.screenmodus']=="time":
-				draw_time.drawProperties(title, time_now, speed, media_time, media_timetotal)
-		active_screen = "audio.player"
-
+	elif playertype == "audio" and int(playerid) >= 0 and (active_screen == "audio.player" or active_screen == "default"):
+		draw_ap(screen)
 	### something else is on the screen
 	elif active_screen == "play_no_back":
 		if playertype == "audio":
-			pass
+			draw_ap(screen)
+		else:
+			draw_vp(screen)
+		draw_time.drawPopUp("Can't go back")
+		active_screen = "play_no_back"
 	elif active_screen == "play_no_fwd":
-		pass
+		if playertype == "audio":
+			draw_ap(screen)
+		else:
+			draw_vp(screen)
+		draw_time.drawPopUp("No more items in playlist")
+		active_screen = "play_no_fwd"
 	elif active_screen == "default_menu":
 		draw_default_screen()
-		draw_default.drawPopUp("Menu Selected")
+		draw_time.drawPopUp("Menu Selected")
 	else:
 		# API has nothing, clear all values, draw default screen
 		draw_default_screen()
@@ -280,7 +316,6 @@ def main():
 								if int(playerid) >= 0:
 									playlistid, position, size = KODI_WEBSERVER.KODI_Get_PL_Properties(playerid)
 									#print "at item "+str(position)+" from "+str(size)
-								### video player active
 								if draw_time._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
 									print "play/pause"
 									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.PlayPause','')
@@ -295,20 +330,27 @@ def main():
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoNext','')
 										else:
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "next"')
-									else:
+									else: # can't go beyond last item, show popup
 										active_screen = "play_no_fwd"
+										draw_time.drawPopUp("No more items in playlist")
 								if draw_time._drawSetting['rew'].collidepoint(mousepos): # back button
-									print "back 1"
+									print "back"
 									if position > 0: # not at the beginning of playlist
 										if ver < 16:
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoPrevious','')
 										else:
 											res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.GoTo', '"to": "previous"')
-									else:
+									else: # can't go before first item, show popup
 										active_screen = "play_no_back"
+										draw_time.drawPopUp("Can't go back")
 								if draw_time._drawSetting['stop'].collidepoint(mousepos): # stop button
 									print "stop"
 									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.Stop','')
+							elif active_screen == "play_no_fwd" or active_screen == "play_no_back":
+								if playertype == "audio":
+									active_screen = "audio.player"
+								else:
+									active_screen = "video.player"
 							elif active_screen == "default": # default screen active
 								if draw_default._drawSetting['menu'].collidepoint(mousepos): # menu button
 									print "default menu"

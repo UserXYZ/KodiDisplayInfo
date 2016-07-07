@@ -83,7 +83,6 @@ class DrawToDisplay:
 
 		font = self.pygame.font.Font(self._ConfigDefault['basedirpath']+"fonts/MC360.ttf", 32)
 		text_size = font.size(text)
-		#print text_size[0], text_size[1]
 		if text_size[0] > (self.screen.get_width() - 20):
 			line_spacing = -10
 			line1, line2 = self.break_text(text, 0)

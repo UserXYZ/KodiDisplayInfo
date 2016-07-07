@@ -323,7 +323,10 @@ def main():
 								if draw_time._drawSetting['home'].collidepoint(mousepos): # home button
 									print "home"
 								if draw_time._drawSetting['menu'].collidepoint(mousepos): # menu button
-									print "video menu"
+									if playertype == "audio":
+										print "audio menu"
+									else:
+										print "video menu"
 								if draw_time._drawSetting['ff'].collidepoint(mousepos): # forward button
 									print "forward"
 									if int(position) < int(size)-1: # still has more items to go

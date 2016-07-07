@@ -19,6 +19,7 @@
 # v3.5    Add text scrolling for one line and text breaking for two line title display
 # v3.6    Rewrite text scrolling to go circular; fix printing for unicode titles, hopefully
 # v4.0    Change to only one display class
+# v4.1    Modify popup display to accept longer text that gets automatically split in two lines
 
 import os
 import sys

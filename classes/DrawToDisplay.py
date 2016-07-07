@@ -85,17 +85,23 @@ class DrawToDisplay:
 		text_size = font.size(text)
 		#print text_size[0], text_size[1]
 		if text_size[0] > (self.screen.get_width() - 20):
+			line_spacing = -10
 			line1, line2 = self.break_text(text, 0)
 			line1_surface = font.render(line1, True, textcolor)
 			line2_surface = font.render(line2, True, textcolor)
-			line1_y = line1_surface.height
-			line2_y = line2_surface.height
+			y = line1_surface.get_height() + line2_surface.get_height()
+			line_width = line1_surface.get_width() if line1_surface.get_width() >= line2_surface.get_width() else line2_surface.get_width()
+			pop = self.pygame.Surface((line_width+20, y+10))
+			pop.fill(popcolor)
+			pop.blit(line1_surface, (pop.get_width()/2 - line_width/2, pop.get_height() - y + line_spacing))
+			pop.blit(line2_surface, (pop.get_width()/2 - line_width/2, pop.get_height() - line2_surface.get_height() + line_spacing))
 		else:
 			text_surface = font.render(text, True, textcolor)
 			pop = self.pygame.Surface((text_size[0]+20, text_size[1]+10))
 			pop.fill(popcolor)
 			pop.blit(text_surface, (pop.get_width()/2 - text_size[0]/2, pop.get_height()/2 - text_size[1]/2))
-			self.screen.blit(pop, (self.screen.get_width()/2 - pop.get_width()/2, self.screen.get_height()/2 - pop.get_height()/2))
+
+		self.screen.blit(pop, (self.screen.get_width()/2 - pop.get_width()/2, self.screen.get_height()/2 - pop.get_height()/2))
 
 	def drawProgressBar(self, play_time, play_time_done, margin_top=0):
 		rect_bar = self.pygame.Rect((10,self._drawSetting['progressbar.margin_top']+margin_top), (self.screen.get_width()-20,self._drawSetting['progressbar.height']))

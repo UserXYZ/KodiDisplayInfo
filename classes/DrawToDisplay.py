@@ -135,16 +135,6 @@ class DrawToDisplay:
 			if len(title) > max_chars:
 				### break title
 				line1, line2 = self.break_text(title, max_chars)
-				"""
-				line1 = title[0:max_chars].strip()
-				line2 = title[max_chars:].strip()
-				brk=0
-				for i in re.finditer(r'\s|_', line1):
-					brk=i.end()
-				if brk > 0 and (max_chars - brk) < 2:
-					line1 = title[0:brk].strip()
-					line2 = title[brk:].strip()
-				"""
 				self.draw_default.displaytext(line1, title_fontsize, 10, self.screen.get_height()-self._drawSetting['title.height_margin']+second_title_height_margin, 'left', (self._ConfigDefault['color.white']))
 				self.draw_default.displaytext(line2, title_fontsize, 10, self.screen.get_height()-self._drawSetting['title.height_margin'], 'left', (self._ConfigDefault['color.white']))
 			else:

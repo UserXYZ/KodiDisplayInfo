@@ -305,7 +305,7 @@ def main():
 	# run the game loop
 	running = True
 	try:
-		clock.tick(30) # max 30FPS
+		clock.tick(10) # max 10FPS
 		while running:
 			#print _ConfigDefault['active_screen']
 			try:
@@ -384,8 +384,9 @@ def main():
 			except KeyboardInterrupt:
 				pygame.quit()
 
-			### redraw screen
+			### redraw screen and wait for a while
 			pygame.display.flip()
+			pygame.time.wait(450)
 
 		### window closed, normal exit
 		helper.printout("[end]     ", _ConfigDefault['mesg.magenta'])

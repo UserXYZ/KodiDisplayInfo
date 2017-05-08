@@ -12,7 +12,7 @@ RESOLUTION =
 # Set to your Framebuffer /dev/fb1 or /dev/fb2
 FBDEV = 
 
-# Setting find unter: Kodi : System → Settings → Services → Webserver
+# Setting find unter: Kodi : System - Settings - Services - Webserver
 [KODI_WEBSERVER]
 # Set it to localhost or IP (192.168.2.101)
 HOST = localhost

@@ -151,6 +151,7 @@ if configParser.has_option('COLOR', 'ORANGE'):
 #Display FB
 if configParser.get('DISPLAY', 'FBDEV') != "":
 	os.environ["SDL_FBDEV"] = configParser.get('DISPLAY', 'FBDEV')
+	os.environ["SDL_VIDEODRIVER"] = 'x11'
 
 def remove_control_chars(s):
 	if s != "":
@@ -292,6 +293,7 @@ def main():
 	screen = pygame.display.set_mode(getattr(draw_default, 'Screen'+_ConfigDefault['display.resolution'])())
 	pygame.display.set_caption('KodiDisplayInfo')
 	pygame.mouse.set_visible(1)
+	pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 	### get kodi version, some API calls differ, we need to handle that
 	if KODI_WEBSERVER.KODI_Get_Version():
 		ver = int(KODI_WEBSERVER.KODI_Get_Version()['major'])
@@ -307,6 +309,8 @@ def main():
 		while running:
 			#print _ConfigDefault['active_screen']
 			try:
+				pygame.event.pump()
+				pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 				for event in pygame.event.get():
 					if event.type == pygame.MOUSEBUTTONDOWN:
 						mousepress = pygame.mouse.get_pressed()
@@ -318,16 +322,20 @@ def main():
 									playlistid, position, size = KODI_WEBSERVER.KODI_Get_PL_Properties(playerid)
 									#print "at item "+str(position)+" from "+str(size)
 								if draw_time._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
+									pygame.mouse.set_cursor(*pygame.cursors.tri_right)
 									print "play/pause"
 									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.PlayPause','')
 								if draw_time._drawSetting['home'].collidepoint(mousepos): # home button
+									pygame.mouse.set_cursor(*pygame.cursors.tri_right)
 									print "home"
 								if draw_time._drawSetting['menu'].collidepoint(mousepos): # menu button
+									pygame.mouse.set_cursor(*pygame.cursors.tri_right)
 									if playertype == "audio":
 										print "audio menu"
 									else:
 										print "video menu"
 								if draw_time._drawSetting['ff'].collidepoint(mousepos): # forward button
+									pygame.mouse.set_cursor(*pygame.cursors.tri_right)
 									print "forward"
 									if int(position) < int(size)-1: # still has more items to go
 										if ver < 16:
@@ -338,6 +346,7 @@ def main():
 										active_screen = "play_no_fwd"
 										draw_time.drawPopUp("No more items in playlist")
 								if draw_time._drawSetting['rew'].collidepoint(mousepos): # back button
+									pygame.mouse.set_cursor(*pygame.cursors.tri_right)
 									print "back"
 									if position > 0: # not at the beginning of playlist
 										if ver < 16:
@@ -348,6 +357,7 @@ def main():
 										active_screen = "play_no_back"
 										draw_time.drawPopUp("Can't go back")
 								if draw_time._drawSetting['stop'].collidepoint(mousepos): # stop button
+									pygame.mouse.set_cursor(*pygame.cursors.tri_right)
 									print "stop"
 									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.Stop','')
 							elif active_screen == "play_no_fwd" or active_screen == "play_no_back":
@@ -357,6 +367,7 @@ def main():
 									active_screen = "video.player"
 							elif active_screen == "default": # default screen active
 								if draw_default._drawSetting['menu'].collidepoint(mousepos): # menu button
+									pygame.mouse.set_cursor(*pygame.cursors.tri_right)
 									print "default menu"
 									active_screen = "default_menu"
 							elif active_screen == "default_menu": # default screen active, menu shown

@@ -48,17 +48,6 @@ class DrawToDisplay_Default:
 		r_menu = self._drawSetting['startscreen.button.menu'].get_rect()
 		# for 64x64px menu icon
 		self._drawSetting['menu'] = Rect((self._drawSetting['startscreen.menu.right'] - 26, self._drawSetting['startscreen.menu.margin_top'] + 6), (r_menu.w-12, r_menu.h-12))
-	"""
-	def SetupDrawSetting480x272(self):
-		self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_480x272.png')
-		self._drawSetting['startscreen.clock.fontsize'] = 64
-		self._drawSetting['startscreen.clock.height_margin'] = 102
-
-	def SetupDrawSetting480x320(self):
-		self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_480x320.png')
-		self._drawSetting['startscreen.clock.fontsize'] = 75
-		self._drawSetting['startscreen.clock.height_margin'] = 118
-	"""
 	def setInfoText(self, text, color):
 		self.default_info_text = text
 		self.default_info_color = color

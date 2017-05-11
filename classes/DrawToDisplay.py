@@ -52,8 +52,11 @@ class DrawToDisplay:
 		getattr(self, 'SetupDrawSetting'+self._ConfigDefault['display.resolution'])()
 
 	def SetupDrawSetting320x240(self):
-		self._drawSetting['button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/hicontrast/button_play_320x240.png')
-		self._drawSetting['button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/hicontrast/button_pause_320x240.png')
+		#self._drawSetting['button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/hicontrast/button_play_320x240.png')
+		#self._drawSetting['button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/hicontrast/button_pause_320x240.png')
+		self._drawSetting['button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/play.png')
+		self._drawSetting['button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/pause.png')
+
 		self._drawSetting['button.home'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_home_320x240.png')
 		self._drawSetting['button.rew'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_rew_320x240.png')
 		self._drawSetting['button.ff'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_ff_320x240.png')

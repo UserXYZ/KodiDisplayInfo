@@ -64,49 +64,6 @@ class DrawToDisplay_VideoTime:
 
 		self._drawSetting['videoinfo.menu.right'] = self.screen.get_width() - self._drawSetting['videoinfo.menu.margin_right']
 
-	"""
-	def SetupDrawSetting480x272(self):
-		#self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_480x272.png')
-		#self._drawSetting['startscreen.clock.fontsize'] = 64
-		#self._drawSetting['startscreen.clock.height_margin'] = 102
-
-		self._drawSetting['videoinfo.progressbar.margin_top'] = 92
-		self._drawSetting['videoinfo.progressbar.height'] = 34
-
-		self._drawSetting['videoinfo.button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/button_play_480x320.png')
-		self._drawSetting['videoinfo.button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/button_break_480x320.png')
-
-		self._drawSetting['videoinfo.title.fontsize'] = 60
-		self._drawSetting['videoinfo.title.height_margin'] = 5
-
-		self._drawSetting['videoinfo.time_now.fontsize'] = 80
-		self._drawSetting['videoinfo.time_now.height_margin'] = 86
-
-		self._drawSetting['videoinfo.time.fontsize'] = 81
-		self._drawSetting['videoinfo.time.margin_left'] = 14
-		self._drawSetting['videoinfo.time.margin_top'] = 83
-
-	def SetupDrawSetting480x320(self):
-		#self._drawSetting['startscreen.logo'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/kodi_logo_480x320.png')
-		#self._drawSetting['startscreen.clock.fontsize'] = 75
-		#self._drawSetting['startscreen.clock.height_margin'] = 118
-
-		self._drawSetting['videoinfo.progressbar.margin_top'] = 120
-		self._drawSetting['videoinfo.progressbar.height'] = 34
-
-		self._drawSetting['videoinfo.button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/button_play_480x320.png')
-		self._drawSetting['videoinfo.button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/button_break_480x320.png')
-
-		self._drawSetting['videoinfo.title.fontsize'] = 60
-		self._drawSetting['videoinfo.title.height_margin'] = 5
-
-		self._drawSetting['videoinfo.time_now.fontsize'] = 80
-		self._drawSetting['videoinfo.time_now.height_margin'] = 86
-
-		self._drawSetting['videoinfo.time.fontsize'] = 81
-		self._drawSetting['videoinfo.time.margin_left'] = 14
-		self._drawSetting['videoinfo.time.margin_top'] = 83
-	"""
 	def drawProgressBar(self, play_time, play_time_done, margin_top=0):
 		rect_bar = self.pygame.Rect((10,self._drawSetting['videoinfo.progressbar.margin_top']+margin_top), (self.screen.get_width()-20,self._drawSetting['videoinfo.progressbar.height']))
 
@@ -127,19 +84,7 @@ class DrawToDisplay_VideoTime:
 		### convert media_time and media_timetotal to seconds
 		seconds_time = self.helper.get_sec(media_time)
 		seconds_timetotal = self.helper.get_sec(media_timetotal)
-		### configure for resolutions
-		"""
-		if self._ConfigDefault['display.resolution']=="480x320":
-			videoinfo_title_fontsize = 49
-			margin_top = -18
-			second_title_height_margin = -46
-			max_chars = 17
-		if self._ConfigDefault['display.resolution']=="480x272":
-			videoinfo_title_fontsize = 42
-			margin_top = -11
-			second_title_height_margin = -40
-			max_chars = 17
-		"""
+
 		if self._ConfigDefault['display.resolution']=="320x240":
 			videoinfo_title_fontsize = 40
 			margin_top = -16

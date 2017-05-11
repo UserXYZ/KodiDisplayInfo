@@ -311,7 +311,7 @@ def main():
 			#print _ConfigDefault['active_screen']
 			try:
 				pygame.event.pump()
-				pygame.mouse.set_cursor(*pygame.cursors.tri_left)
+				pygame.mouse.set_cursor(*pygame.cursors.tri_right)
 				for event in pygame.event.get():
 					if event.type == pygame.MOUSEBUTTONDOWN:
 						mousepress = pygame.mouse.get_pressed()
@@ -323,20 +323,20 @@ def main():
 									playlistid, position, size = KODI_WEBSERVER.KODI_Get_PL_Properties(playerid)
 									#print "at item "+str(position)+" from "+str(size)
 								if draw_time._drawSetting['play_pause'].collidepoint(mousepos): # play/pause button
-									pygame.mouse.set_cursor(*pygame.cursors.tri_right)
+									pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 									print "play/pause"
 									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.PlayPause','')
 								if draw_time._drawSetting['home'].collidepoint(mousepos): # home button
-									pygame.mouse.set_cursor(*pygame.cursors.tri_right)
+									pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 									print "home"
 								if draw_time._drawSetting['menu'].collidepoint(mousepos): # menu button
-									pygame.mouse.set_cursor(*pygame.cursors.tri_right)
+									pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 									if playertype == "audio":
 										print "audio menu"
 									else:
 										print "video menu"
 								if draw_time._drawSetting['ff'].collidepoint(mousepos): # forward button
-									pygame.mouse.set_cursor(*pygame.cursors.tri_right)
+									pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 									print "forward"
 									if int(position) < int(size)-1: # still has more items to go
 										if ver < 16:
@@ -347,7 +347,7 @@ def main():
 										active_screen = "play_no_fwd"
 										draw_time.drawPopUp("No more items in playlist")
 								if draw_time._drawSetting['rew'].collidepoint(mousepos): # back button
-									pygame.mouse.set_cursor(*pygame.cursors.tri_right)
+									pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 									print "back"
 									if position > 0: # not at the beginning of playlist
 										if ver < 16:
@@ -358,7 +358,7 @@ def main():
 										active_screen = "play_no_back"
 										draw_time.drawPopUp("Can't go back")
 								if draw_time._drawSetting['stop'].collidepoint(mousepos): # stop button
-									pygame.mouse.set_cursor(*pygame.cursors.tri_right)
+									pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 									print "stop"
 									res = KODI_WEBSERVER.KODI_Cmd(playerid, 'Player.Stop','')
 							elif active_screen == "play_no_fwd" or active_screen == "play_no_back":
@@ -368,7 +368,7 @@ def main():
 									active_screen = "video.player"
 							elif active_screen == "default": # default screen active
 								if draw_default._drawSetting['menu'].collidepoint(mousepos): # menu button
-									pygame.mouse.set_cursor(*pygame.cursors.tri_right)
+									pygame.mouse.set_cursor(*pygame.cursors.tri_left)
 									print "default menu"
 									active_screen = "default_menu"
 							elif active_screen == "default_menu": # default screen active, menu shown

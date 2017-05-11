@@ -20,6 +20,7 @@
 # v3.6    Rewrite text scrolling to go circular; fix printing for unicode titles, hopefully
 # v4.0    Change to only one display class
 # v4.1    Modify popup display to accept longer text that gets automatically split in two lines
+# v4.2    Switch to bigger icons on all menus that can be selected with fingers - 64x64px
 
 import os
 import sys

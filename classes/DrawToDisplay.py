@@ -7,8 +7,6 @@ class DrawToDisplay:
 
 	# default for 320x240
 	_drawSetting = {}
-	#_drawSetting['progressbar.margin_top'] = 85
-	#_drawSetting['progressbar.height'] = 25
 	_drawSetting['progressbar.margin_top'] = 85
 	_drawSetting['progressbar.height'] = 20
 
@@ -23,8 +21,6 @@ class DrawToDisplay:
 	_drawSetting['title.fontsize'] = 40
 	_drawSetting['title.height_margin'] = 4
 
-	#_drawSetting['time_now.fontsize'] = 60
-	#_drawSetting['time_now.height_margin'] = 68
 	_drawSetting['time_now.fontsize'] = 38
 	_drawSetting['time_now.height_margin'] = 40
 
@@ -57,16 +53,8 @@ class DrawToDisplay:
 		getattr(self, 'SetupDrawSetting'+self._ConfigDefault['display.resolution'])()
 
 	def SetupDrawSetting320x240(self):
-		#self._drawSetting['button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/hicontrast/button_play_320x240.png')
-		#self._drawSetting['button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/hicontrast/button_pause_320x240.png')
 		self._drawSetting['button.play'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/play.png')
 		self._drawSetting['button.break'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/pause.png')
-
-		#self._drawSetting['button.home'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_home_320x240.png')
-		#self._drawSetting['button.rew'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_rew_320x240.png')
-		#self._drawSetting['button.ff'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_ff_320x240.png')
-		#self._drawSetting['button.stop'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_stop_320x240.png')
-		#self._drawSetting['button.menu'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/32x32/hicontrast/button_menu_320x240.png')
 
 		self._drawSetting['button.home'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/home.png')
 		self._drawSetting['button.rew'] = self.pygame.image.load(self._ConfigDefault['basedirpath']+'img/48x48/rew.png')
@@ -200,24 +188,29 @@ class DrawToDisplay:
 		else: ### pause
 			self.screen.blit(self._drawSetting['button.break'], (8, margin_progressbar+8))
 		### draw menu buttons
-		#self.screen.blit(self._drawSetting['button.menu'], (self._drawSetting['menu.right'] - 32, self._drawSetting['menu.margin_top']))
-		#self.screen.blit(self._drawSetting['button.ff'], (self._drawSetting['menu.right'] - 64, self._drawSetting['menu.margin_top']))
-		#self.screen.blit(self._drawSetting['button.rew'], (self._drawSetting['menu.right'] - 96, self._drawSetting['menu.margin_top']))
-		#self.screen.blit(self._drawSetting['button.stop'], (self._drawSetting['menu.right'] - 128, self._drawSetting['menu.margin_top']))
-		
 		self.screen.blit(self._drawSetting['button.menu'], (self._drawSetting['menu.right']-48-self._drawSetting["menu.space"], self._drawSetting['menu.margin_top']))
 		self.screen.blit(self._drawSetting['button.ff'], (self._drawSetting['menu.right']-96-2*self._drawSetting["menu.space"], self._drawSetting['menu.margin_top']))
 		self.screen.blit(self._drawSetting['button.rew'], (self._drawSetting['menu.right']-144-3*self._drawSetting["menu.space"], self._drawSetting['menu.margin_top']))
 		self.screen.blit(self._drawSetting['button.stop'], (self._drawSetting['menu.right']-192-4*self._drawSetting["menu.space"], self._drawSetting['menu.margin_top']))
 		
 		### put clickable area over buttons
-		r_play_pause = self._drawSetting['button.play'].get_rect().inflate(-4, -4)
-		self._drawSetting['play_pause'] = Rect((8, margin_progressbar+8), (r_play_pause[2], r_play_pause[3]))
-		r_menu = self._drawSetting['button.menu'].get_rect().inflate(-8, -10)
-		self._drawSetting['menu'] = Rect((self._drawSetting['menu.right'] - 32, self._drawSetting['menu.margin_top']), (r_menu[2], r_menu[3]))
-		r_ff = self._drawSetting['button.ff'].get_rect().inflate(-6, -12)
-		self._drawSetting['ff'] = Rect((self._drawSetting['menu.right'] - 64, self._drawSetting['menu.margin_top']), (r_ff[2], r_ff[3]))
-		r_rew = self._drawSetting['button.rew'].get_rect().inflate(-6, -12)
-		self._drawSetting['rew'] = Rect((self._drawSetting['menu.right'] - 96, self._drawSetting['menu.margin_top']), (r_rew[2], r_rew[3]))
-		r_stop = self._drawSetting['button.stop'].get_rect().inflate(-8, -12)
-		self._drawSetting['stop'] = Rect((self._drawSetting['menu.right'] - 128, self._drawSetting['menu.margin_top']), (r_stop[2], r_stop[3]))
+
+		### play/pause button ###
+		r_play_pause = self._drawSetting['button.play'].get_rect()
+		self._drawSetting['play_pause'] = Rect((8, margin_progressbar+8), (r_play_pause.w-4, r_play_pause.h-4))
+
+		### menu button ###
+		r_menu = self._drawSetting['button.menu'].get_rect()
+		self._drawSetting['menu'] = Rect((self._drawSetting['menu.right']-48-self._drawSetting["menu.space"], self._drawSetting['menu.margin_top']), (r_menu.w-4, r_menu.h-4))
+
+		### forward button ###
+		r_ff = self._drawSetting['button.ff'].get_rect()
+		self._drawSetting['ff'] = Rect((self._drawSetting['menu.right']-96-2*self._drawSetting["menu.space"], self._drawSetting['menu.margin_top']), (r_ff.w-6, r_ff.h-12))
+
+		### back button ###
+		r_rew = self._drawSetting['button.rew'].get_rect()
+		self._drawSetting['rew'] = Rect((self._drawSetting['menu.right']-144-3*self._drawSetting["menu.space"], self._drawSetting['menu.margin_top']), (r_rew.w-6, r_rew.h-12))
+
+		### stop button ###
+		r_stop = self._drawSetting['button.stop'].get_rect()
+		self._drawSetting['stop'] = Rect((self._drawSetting['menu.right']-192-4*self._drawSetting["menu.space"], self._drawSetting['menu.margin_top']), (r_stop.w-8, r_stop.h-12))
